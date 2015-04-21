@@ -9,7 +9,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     {name: 'Shopping', value:"shopping"},
     {name: 'Medical', value:"medical"},
     {name: 'Gas', value:"gas"},
-    {name: 'Pets', value:"pets"}
+    {name: 'Pets', value:"pets"},
+    {name: 'Parks', value: "active, parks"}
   ];
   //set default option filter to "food"
   $scope.optionFilter = $scope.optionSelections[1].value;
@@ -24,8 +25,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     var pValid = angular.element("<p id='warningMsg'/>");
     pValid.text("");
     //check to see if the location entered is invalid
-    //if location is invalid, then append invalid message 
-    // else, append a blank message 
+    //if location is invalid, then append invalid message
+    // else, append a blank message
     if (isInvalid) {
       $element.find("main-area").append(pInvalid);
     } else {
@@ -60,7 +61,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
       directionsService.route(request, function(response, status) {
         // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
-          $scope.geoCodeNotSuccessful=false;  
+          $scope.geoCodeNotSuccessful=false;
           //Update the map on index.html
           directionsDisplay.setDirections(response);
 
