@@ -9,12 +9,15 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     {name: 'Shopping', value:"shopping"},
     {name: 'Medical', value:"medical"},
     {name: 'Gas', value:"gas"},
-    {name: 'Pets', value:"pets"}
+    {name: 'Pets', value:"pets"},
+    {name: 'Parks', value: "active, parks"}
   ];
   // set default option filter to "food"
   $scope.optionFilter = $scope.optionSelections[1].value;
   // initialize the geoCodeNotSuccessful to be used for determining valid continental destination or not
   $scope.geoCodeNotSuccessful = false;
+  $scope.distance = "";
+  $scope.time = "";
 
   $scope.appendWarningMsg = function(isInvalid) {
     // invalid message template
@@ -23,8 +26,13 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     // valid message template
     var pValid = angular.element("<p id='warningMsg'/>");
     pValid.text("");
+<<<<<<< HEAD
     // check to see if the location entered is invalid
     // if location is invalid, then append invalid message
+=======
+    //check to see if the location entered is invalid
+    //if location is invalid, then append invalid message
+>>>>>>> d8009f409d13c4dab25b72e69ea003835eea047d
     // else, append a blank message
     if (isInvalid) {
       $element.find("main-area").append(pInvalid);
@@ -60,6 +68,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
         // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
           $scope.geoCodeNotSuccessful=false;
+
           // update the map on index.html
           directionsDisplay.setDirections(response);
 
@@ -76,6 +85,10 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
             sendData.waypoints[j] = response.routes[0].overview_path[j].k + "," + response.routes[0].overview_path[j].D;
           }
 
+          console.log("sendData: ", sendData);
+          $scope.distance = response.routes[0].legs[0].distance.text.replace('mi', 'miles').replace("km", "kilometers");
+
+          $scope.duration = response.routes[0].legs[0].duration.text;
           $scope.appendWarningMsg($scope.geoCodeNotSuccessful); // append the blank (no warning) message to main.html
 
           // send all waypoints along route to server

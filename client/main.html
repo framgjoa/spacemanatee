@@ -42,16 +42,6 @@
       var stepDisplay;
 
       function initialize() {
-
-        var mapOptions = {
-          center: { lat: 37.82, lng: -122.30},
-          zoom: 10,
-          disableDefaultUI:false
-        };
-
-        map = new google.maps.Map(document.getElementById('map-canvas'),
-            mapOptions);
-
         var input1 = document.getElementById('start');
         var input2 = document.getElementById('end');
 
@@ -61,7 +51,24 @@
         directionsDisplay = new google.maps.DirectionsRenderer();
         stepDisplay = new google.maps.InfoWindow();
 
-        directionsDisplay.setMap(map);
+        var setMap = function(data) {
+          // Default is needed in case of adblock
+          var mapOptions = {
+            center: { lat: data && data.lat ? data.lat : 37.82, lng: data && data.lon ? data.lon : -122.30},
+            zoom: 10,
+            disableDefaultUI:false
+          };
+
+          map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+
+          directionsDisplay.setMap(map);
+        }
+        setMap();
+
+        $.getJSON('http://ip-api.com/json/?callback=?', function(data) {
+          setMap(data);
+        });
       }
 
       google.maps.event.addDomListener(window, 'load', initialize);
@@ -100,7 +107,7 @@
         <div class="col-lg-12">
           <div id="topTen" style="margin-left: 20%;margin-right: 20%;vertical-align: middle;text-align: center;">
             <div ng-if="!!topTen" ng-model="topTen">
-              <h1>Here's our Top 10 favorite spots along the journey! </h1><br>
+              <h1>You're gonna be driving {{distance}} (or {{duration}}).  Split it up by visiting our Top 10 favorite spots along the journey! </h1><br>
               <div ng-repeat= "top in topTen" id="topTenList">
                 <div ng-class="{'oddTop10': $odd , 'evenTop10': $even}">
 
