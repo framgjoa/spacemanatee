@@ -9,12 +9,15 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     {name: 'Shopping', value:"shopping"},
     {name: 'Medical', value:"medical"},
     {name: 'Gas', value:"gas"},
-    {name: 'Pets', value:"pets"}
+    {name: 'Pets', value:"pets"},
+    {name: 'Parks', value: "active, parks"}
   ];
   //set default option filter to "food"
   $scope.optionFilter = $scope.optionSelections[1].value;
   //initialize the geoCodeNotSuccessful to be used for determining valid continental destination or not
   $scope.geoCodeNotSuccessful = false;
+  $scope.distance = "";
+  $scope.time = "";
 
   $scope.appendWarningMsg = function(isInvalid) {
     // invalid message template
@@ -24,8 +27,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     var pValid = angular.element("<p id='warningMsg'/>");
     pValid.text("");
     //check to see if the location entered is invalid
-    //if location is invalid, then append invalid message 
-    // else, append a blank message 
+    //if location is invalid, then append invalid message
+    // else, append a blank message
     if (isInvalid) {
       $element.find("main-area").append(pInvalid);
     } else {
@@ -60,7 +63,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
       directionsService.route(request, function(response, status) {
         // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
-          $scope.geoCodeNotSuccessful=false;  
+          $scope.geoCodeNotSuccessful=false;
           //Update the map on index.html
           directionsDisplay.setDirections(response);
 
@@ -82,6 +85,9 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           }
 
           console.log("sendData: ", sendData);
+          $scope.distance = response.routes[0].legs[0].distance.text.replace('mi', 'miles').replace("km", "kilometers");
+
+          $scope.duration = response.routes[0].legs[0].duration.text;
           $scope.appendWarningMsg($scope.geoCodeNotSuccessful); // append the blank (no warning) message to main.html
 
           // Send all waypoints along route to server
