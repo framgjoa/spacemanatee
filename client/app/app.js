@@ -16,6 +16,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
   $scope.optionFilter = $scope.optionSelections[1].value;
   //initialize the geoCodeNotSuccessful to be used for determining valid continental destination or not
   $scope.geoCodeNotSuccessful = false;
+  $scope.distance = "";
+  $scope.time = "";
 
   $scope.appendWarningMsg = function(isInvalid) {
     // invalid message template
@@ -83,6 +85,9 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           }
 
           console.log("sendData: ", sendData);
+          $scope.distance = response.routes[0].legs[0].distance.text.replace('mi', 'miles').replace("km", "kilometers");
+
+          $scope.duration = response.routes[0].legs[0].duration.text;
           $scope.appendWarningMsg($scope.geoCodeNotSuccessful); // append the blank (no warning) message to main.html
 
           // Send all waypoints along route to server
