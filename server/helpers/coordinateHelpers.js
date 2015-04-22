@@ -54,16 +54,15 @@ module.exports.trimGoogleCoord = function(googleCoords, distance) {
 
   // Pushes the coordinates that are a reasonable distance from the starting and ending locations
   if (googleCoords.length > 5) {
-    console.log('start');
-    console.log('even is', distance/20);
-    for (var i = 0; i < googleCoords.length; i++) {]
-      if (i>0)
-      console.log(i, 'Dist:', exports.calcDistance(exports.parseGoogleCoord(googleCoords[i]), exports.parseGoogleCoord(googleCoords[i-1])));]
+    // console.log('even is', distance/20);
+    for (var i = 0; i < googleCoords.length; i++) {
+      // if (i>0)
+      // console.log(i, 'Dist:', exports.calcDistance(exports.parseGoogleCoord(googleCoords[i]), exports.parseGoogleCoord(googleCoords[i-1])));
 
       var distanceToStart = module.exports.calcDistance(module.exports.parseGoogleCoord(googleCoords[i]), module.exports.parseGoogleCoord(googleCoords[0]));
       var distanceToEnd = module.exports.calcDistance(module.exports.parseGoogleCoord(googleCoords[i]), module.exports.parseGoogleCoord(googleCoords[googleCoords.length - 1]));
 
-      if ( distanceToStart >= distance / 20 && distanceToEnd >= distance / 20) {]
+      if (distanceToStart >= distance / 20 && distanceToEnd >= distance / 20) {
         trimmedCoords.push(googleCoords[i]);
       }
     }

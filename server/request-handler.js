@@ -7,7 +7,7 @@ var performSearch = function(req, res, googleCoords, distance) {
 
   // yelpResults: Response from all Yelp queries
   yelpHelper.searchYelp(req, res, googleCoords, distance, function(yelpResults) {
-    var topResults = yelpHelper.createTopResultsJSON(yelpResults, distance);
+    var topResults = yelpHelper.createTopResultsJSON(yelpResults, distance, googleCoords[0]);
     res.end(JSON.stringify(topResults));
   });
 };
