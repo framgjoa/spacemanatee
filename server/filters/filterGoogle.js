@@ -3,7 +3,7 @@
 
 var filter = function(requestBody){
   var distance = requestBody.distance;  //Total trip distance
-  var coordObj = requestBody.waypoints; //All of the coordinate points along the route returned by Google
+  var coordArray = requestBody.waypoints; //All of the coordinate points along the route returned by Google
 
   //parse distance into an int
   distance = distance.replace(/\,/g,"").split(" ");
@@ -17,12 +17,6 @@ var filter = function(requestBody){
     distanceBetweenQueries = distance /10;
   } else {
     distanceBetweenQueries = 10;
-  }
-
-  //Convert coordObj from an object to an array to calculate distance between points
-  var coordArray = [];
-  for(var key in coordObj){
-    coordArray.push(coordObj[key]);
   }
 
   //The coordArray points are not equally distant from one another so distanceBetweenPoints is an approximate value
@@ -43,7 +37,7 @@ var filter = function(requestBody){
   return {
     distance: distance,
     filteredCoords:filteredCoords
-  }
-}
+  };
+};
 
 module.exports = filter;

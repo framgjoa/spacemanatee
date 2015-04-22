@@ -14,7 +14,6 @@ angular.module('app.service', [])
       return description;
   };
 
-
   var attachInstructionText = function(marker, text) {
     google.maps.event.addListener(marker, 'click', function() {
       // Open an info window when the marker is clicked on
@@ -47,9 +46,6 @@ angular.module('app.service', [])
       }, i * 300);
     }
   };
-
-
-
 
   return {
     placemarkers: placemarkers
