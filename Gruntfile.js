@@ -1,12 +1,42 @@
 module.exports = function(grunt){
 
+  // Test
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-nodemon');
+
+  // Build
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-concat');
+
+  // Utility
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-notify');
+
+
   grunt.initConfig({
+
+    // Test
+    jshint: {
+      files: ['client/app/*.js', 'server/**/*.js']
+    },
+
+    mochaTest: {
+      test: {
+        src: ['test/**/*.js']
+      }
+    },
+
+    nodemon: {
+      dev: {
+        script: 'server.js'
+      }
+    },
+
+    // Build
     clean: ['client/dist/'],
 
-    jshint: {
-      files: ['Gruntfile.js', 'client/app/*.js']
-    },
-    //'Gruntfile.js', 'client/app/*.js', 'server/**/*.js', 'test/**/*.js'
     concat: {
       options: {
         separator: ';'
@@ -23,29 +53,34 @@ module.exports = function(grunt){
           'client/dist/built.min.js': ['client/dist/built.js']
         }
       }
+    },
+
+    // Watch for testing and building
+    watch: {
+      jshint: {
+        files: ['public/client/**/*.js', 'server/**/*'],
+        tasks: ['jshint', 'mochaTest']
+      }
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-
-  grunt.registerTask('lint', [
-    'jshint'
-  ]);
-
-  grunt.registerTask('default', [
-    'clean',
-    'jshint',
-    'concat',
-    'uglify'
-  ]);
+  grunt.registerTask('test', ['jshint', 'mochaTest']);
 
   grunt.registerTask('build', [
     'clean',
     'concat',
     'uglify'
   ]);
+
+  grunt.registerTask('serve', [
+    'clean',
+    'concat',
+    'uglify',
+    'jshint',
+    'mochaTest',
+    'nodemon'
+  ]);
+
+
 
 };
