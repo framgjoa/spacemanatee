@@ -43,8 +43,8 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
   // Yelp search parameter configuration
   yelpProperty.term = req.body.optionFilter;
 
-  // Sets radius_filter to distance (in miles) / 25, with a floor of 2 and a ceiling of 25
-  yelpProperty.radius_filter = Math.min(Math.max(distance/25, 2), 25) * 1609.34;
+  // Sets radius_filter to distance (in miles) / 25, with a floor of 2 and a ceiling of 25. Convert to meters.
+  yelpProperty.radius_filter = coordHelpers.radiusFilter(distance)*1609.34;
 
   // Queries Yelp for each point returned by filterGoogle.js
   // yelpClient.search is async, so closure scope maintains the value of i

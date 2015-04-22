@@ -19,6 +19,7 @@ module.exports = function(grunt){
 
     // Test
     jshint: {
+      options: {loopfunc: true},
       files: ['client/app/*.js', 'server/**/*.js']
     },
 
