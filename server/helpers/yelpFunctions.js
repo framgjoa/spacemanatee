@@ -77,7 +77,6 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
 module.exports.createTopResultsJSON = function(yelpResults, distance) {
   var allBusinesses = [];
   var topResults = [];
-  var minRating = 0;
   var evenSpreadResults =[];
   var sortedResults;
 

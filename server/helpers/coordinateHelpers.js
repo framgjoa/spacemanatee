@@ -6,7 +6,7 @@ if (typeof(Number.prototype.toRad) === "undefined") {
 }
 
 // calculate the distance between 2 waypoints, given their latitudes and longitudes, return distance in miles
-module.exports.calcDistance = function(pt1, pt2) {
+exports.calcDistance = function(pt1, pt2) {
   var R = 6371; // earth radius, in km
   var lat1 = pt1.location.coordinate.latitude;
   var lon1 = pt1.location.coordinate.longitude;
@@ -27,7 +27,7 @@ module.exports.calcDistance = function(pt1, pt2) {
 };
 
 // parse google coordinate into {latitude:..., longitude: ... } format
-module.exports.parseGoogleCoord = function(googleCoord) {
+exports.parseGoogleCoord = function(googleCoord) {
   var latitude = parseFloat(googleCoord.match(/^.*,/)[0].replace(",", ""));
   var longitude = parseFloat(googleCoord.match(/,.*$/)[0].replace(",", ""));
   var obj = {
@@ -42,13 +42,17 @@ module.exports.parseGoogleCoord = function(googleCoord) {
 };
 
 // trim the google waypoint coordinate to take out start and end way point so no clustering at 2 ends.
-module.exports.trimGoogleCoord = function(googleCoords, distance) {
+exports.trimGoogleCoord = function(googleCoords, distance) {
   var trimmedCoords = [];
   //Loop through array and only push the coordinates that are distanceBetweenQueries apart
   if (googleCoords.length > 5) {
+    console.log('start');
+    console.log('even is', distance/20);
     for (var i = 0; i < googleCoords.length; i++) {
-      if (module.exports.calcDistance(module.exports.parseGoogleCoord(googleCoords[i]), module.exports.parseGoogleCoord(googleCoords[0])) >= distance / 20 &&
-        module.exports.calcDistance(module.exports.parseGoogleCoord(googleCoords[i]), module.exports.parseGoogleCoord(googleCoords[googleCoords.length - 1])) >= distance / 20) {
+      if (i>0)
+      console.log(i, 'Dist:', exports.calcDistance(exports.parseGoogleCoord(googleCoords[i]), exports.parseGoogleCoord(googleCoords[i-1])));
+      if (exports.calcDistance(exports.parseGoogleCoord(googleCoords[i]), exports.parseGoogleCoord(googleCoords[0])) >= distance / 20 &&
+        exports.calcDistance(exports.parseGoogleCoord(googleCoords[i]), exports.parseGoogleCoord(googleCoords[googleCoords.length - 1])) >= distance / 20) {
         trimmedCoords.push(googleCoords[i]);
       }
     }
