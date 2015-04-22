@@ -1,29 +1,26 @@
-//Filter coordinates received from front end POST request
-//into a smaller number of coordinates for Yelp requests
-
+// Filters Google coordinates into a filtered coordinates for Yelp requests
 var filter = function(requestBody){
-  var distance = requestBody.distance;  //Total trip distance
-  var coordArray = requestBody.waypoints; //All of the coordinate points along the route returned by Google
 
-  //The distance between each yelp query in miles (i.e. Yelp will be queried every 10 miles along the route)
-  // if the distance is less than 20 miles, then query every total distance /10 miles to filter the waypoint
-  // else, just query every 10 miles to filter the waypoint
-  var distanceBetweenQueries;
-  if (distance <= 20) {
-    distanceBetweenQueries = distance /10;
+  var googleCoords = requestBody.waypoints;
+  var totalTripDistance = requestBody.distance;
+  var distanceBetweenQueries; //  The distance between each yelp query in miles
+  var distanceBetweenPoints = totalTripDistance / googleCoords.length;
+
+  //  Adjusts the distance between queries if the trip distance is less than 20 miles
+  if (totalTripDistance <= 20) {
+    distanceBetweenQueries = totalTripDistance /10;
   } else {
     distanceBetweenQueries = 10;
   }
 
-  //The coordArray points are not equally distant from one another so distanceBetweenPoints is an approximate value
-  var distanceBetweenPoints = distance / coordArray.length;
-
   var counter = 0;
   var filteredCoords = [];
-  //Loop through each coordinate along the route and only add the coordinates that are distanceBetweenQueries apart
-  for (var i = 0; i < coordArray.length; i++){
+
+  // Loops through each coordinate along the route
+  // Adds the coordinates that are distanceBetweenQueries apart
+  for (var i = 0; i < googleCoords.length; i++){
     if(counter > distanceBetweenQueries){
-      filteredCoords.push(coordArray[i]);
+      filteredCoords.push(googleCoords[i]);
       counter = 0;
     } else {
       counter += distanceBetweenPoints;
@@ -31,7 +28,7 @@ var filter = function(requestBody){
   }
 
   return {
-    distance: distance,
+    distance: totalTripDistance,
     filteredCoords:filteredCoords
   };
 };
