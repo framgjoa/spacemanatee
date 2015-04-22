@@ -29,7 +29,6 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-
     <link rel="stylesheet" type="text/css" href="styles/style.css" />
     <link href='https://fonts.googleapis.com/css?family=Lobster|Rancho' rel='stylesheet' type='text/css'>
 
@@ -115,7 +114,7 @@
                   <div style="padding:5px 0 0 0">
                     <div id="name">{{top.name}} </div>
                     <div id="address">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
-                    <img ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" /><br>
+                    <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" /><br>
                     <a ng-href='{{top["url"]}}' target="_blank"> Visit on Yelp</a>
                   </div>
                   <br clear="all">
