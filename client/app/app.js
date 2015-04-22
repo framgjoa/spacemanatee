@@ -10,6 +10,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     {name: 'Shopping', value:"shopping"},
     {name: 'Medical', value:"medical"},
     {name: 'Gas', value:"gas"},
+    {name: 'Parks', value: "active, parks"},
     {name: 'Pets', value:"pets"}
   ];
 
