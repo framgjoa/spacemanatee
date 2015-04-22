@@ -44,6 +44,7 @@
           <div id="topTen">
             <div ng-if="!!topTen" ng-model="topTen">
               <h1>You're gonna be driving {{distance}} (or {{duration}}).  Split it up by visiting our Top 10 favorite spots along the journey! </h1><br>
+              <!-- Limiting the visible yelp results to 10 -->
               <div ng-repeat= "top in topTen | limitTo: 10"  id="topTenList">
                 <div ng-class="{'oddTop10': $odd , 'evenTop10': $even}">
 
