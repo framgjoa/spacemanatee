@@ -111,10 +111,10 @@
                   <img id="thumbnail" ng-src='{{top["image_url"] ? top["image_url"] : "./images/default.jpg"}}' alt="Sites image not yet available"/><br>
                   <div style="padding:5px 0 0 0">
 
-                    <div id="name">{{top.name}} </div>
+                    <a ng-href='{{top["url"]}}' target="_blank"><div id="name">{{top.name}}</div></a>
                     <div id="address">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
                     <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" /><br>
-                    <a ng-href='{{top["url"]}}' target="_blank"> Visit on Yelp</a>
+                    <div id="removeButton"><img src="./images/removeButton.gif"></div>
                   </div>
                   <br clear="all">
 

@@ -39,6 +39,15 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
   padding: 5px;
 }
 
+#removeButton img {
+  float: right;
+  height: 30px;
+  width: 30px;
+  margin-top: -110px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
 #journey {
   text-align: center;
 }
