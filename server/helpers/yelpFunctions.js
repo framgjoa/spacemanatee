@@ -32,7 +32,6 @@ function isCommonPlace(businessEntry){
   return !!commonFilterHash[businessEntry.name];
 }
 
-
 // Use Yelp API to get top locations (based on longitude and latitude)
 module.exports.searchYelp = function (req, res, googleCoords, distance, callback) {
 
@@ -44,8 +43,8 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
   // Yelp search parameter configuration
   yelpProperty.term = req.body.optionFilter;
 
-  // Sets radius_filter to distance (in miles) / 25, with a floor of 2 and a ceiling of 25
-  yelpProperty.radius_filter = Math.min(Math.max(distance/25, 2), 25) * 1609.34;
+  // Sets radius_filter to distance (in miles) / 25, with a floor of 2 and a ceiling of 25. Convert to meters.
+  yelpProperty.radius_filter = coordHelpers.radiusFilter(distance)*1609.34;
 
   // Queries Yelp for each point returned by filterGoogle.js
   // yelpClient.search is async, so closure scope maintains the value of i
@@ -73,9 +72,8 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
   }
 };
 
-
 // Filters Yelp results into an overall top 10
-module.exports.createTopResultsJSON = function(yelpResults, distance) {
+module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
   var allBusinesses = [];
 
   // Pushes all businesses from yelpResults into one array for easy filtering
@@ -93,30 +91,33 @@ module.exports.createTopResultsJSON = function(yelpResults, distance) {
   // Finds the top results algorithm
   var findTopResults = function() {
     var topResults = [];
-    var sortedResults;
 
     // Compares ratings, and then reviews. Sort by string id afterwards for easy duplicate detection
-    sortedResults = allBusinesses.sort(function(a, b) {
+    allBusinesses.sort(function(a, b) {
       return b.rating - a.rating || b.review_count - a.review_count ||
-        b.id > a.id ? 1 : b.id === a.id ? 0 : -1;
+        (b.id > a.id ? 1 : b.id === a.id ? 0 : -1);
     });
 
     // Eliminate duplicates
-    for (var j=1; j<sortedResults.length; j++) {
-      if (sortedResults[j-1].name === sortedResults[j].name) {
-        sortedResults.splice(j, 1);
+    for (var j=1; j<allBusinesses.length; j++) {
+      if (allBusinesses[j-1].name === allBusinesses[j].name) {
+        allBusinesses.splice(j, 1);
         j--;
       }
     }
 
     // Limits to top 30 results
-    topResults = sortedResults.slice(0, 30);
+    topResults = allBusinesses.slice(0, 30);
     return topResults;
   };
 
-
   // Finds results with the evenSpread algorithm
   var findEvenSpreadResults = function() {
+
+    // Sort by distance to start to check for duplicates. Problematic if optimal path is windy
+    allBusinesses.sort(function(a, b) {
+      return coordHelpers.calcDistance(coordHelpers.parseGoogleCoord(start), a) - coordHelpers.calcDistance(coordHelpers.parseGoogleCoord(start), b);
+    });
 
     var evenSpreadResults =[];
 
@@ -139,7 +140,7 @@ module.exports.createTopResultsJSON = function(yelpResults, distance) {
       // Pushes the result to the array
       evenSpreadResults.push(allBusinesses[m]);
 
-      // If we have 30 entries, skips the remaining
+      // If we have 20 entries, skips the remaining
       if (evenSpreadResults.length >= 20) {
         break;
       }
