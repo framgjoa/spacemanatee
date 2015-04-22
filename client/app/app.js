@@ -71,7 +71,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           var sendData = {
             distance: response.routes[0].legs[0].distance.text,
             optionFilter: $scope.optionFilter,
-            waypoints: {}
+            waypoints: []
           };
 
           // gather all points along route returned by Google in overview_path property
