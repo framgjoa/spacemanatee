@@ -23,6 +23,11 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
   $scope.distance = "";
   $scope.time = "";
 
+  // Cache will be to store the distances from origin for the TopTop attractions
+  // Since each will require a Google API query, in order to minimize re-queries,
+  // the initial result will be stored in cache
+  $scope.cache = {};
+
   $scope.appendWarningMsg = function(isInvalid) {
 
     // Invalid message template
@@ -41,19 +46,13 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     }
   };
 
-  // Runs when a user hits the submit button
-  $scope.submit = function(city) {
 
-    var startGeo, endGeo;
+  //Queries Google for directions services and generates map
+  $scope.calcRoute = function (start, end) {
+      console.log("Calculating Route...");
 
-    $scope.geoCodeNotSuccessful = false;
-    $element.find("main-area").empty();
-    calcRoute();
-
-    function calcRoute() {
-
-      // New directionsService object to interact with google maps API
-      var directionsService = new google.maps.DirectionsService();
+      // New directionsService object to interact with Google maps API
+      var directionsService = new google.maps.DirectionsService(start,end);
 
       // clear markers whenever new search
       for (var i = 0; i < markerArray.length; i++) {
@@ -68,8 +67,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
         travelMode: google.maps.TravelMode.DRIVING};
       };
 
-      // Sends request to Google Maps Directions API
-      directionsService.route(request(), function(response, status) {
+        directionsService.route(request(), function(response, status) {
 
         // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
@@ -91,6 +89,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           // Inserts them into the mapData object
           for (var j = 0; j < response.routes[0].overview_path.length; j++) {
             mapData.waypoints[j] = response.routes[0].overview_path[j].k + "," + response.routes[0].overview_path[j].D;
+
           }
 
           $scope.distance = response.routes[0].legs[0].distance.text.replace('mi', 'miles').replace("km", "kilometers");
@@ -117,6 +116,18 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           $scope.appendWarningMsg($scope.geoCodeNotSuccessful);
         }
       });
-    }
-  };
+     };
+
+
+  // Runs when a user hits the submit button
+  $scope.submit = function() {
+
+    var startGeo, endGeo;
+
+    $scope.geoCodeNotSuccessful = false;
+    $element.find("main-area").empty();
+
+    $scope.calcRoute($scope.location.start, $scope.location.end);
+
+    };
 }]);
