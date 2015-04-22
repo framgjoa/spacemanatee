@@ -103,7 +103,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
           // Receives Yelp reccomendations and displays as markers
           .then(function(res){
-            Utility.placemarkers(res.data.results);
+            Utility.placemarkers(res.data.results.concat(res.data.topTen.slice(0, 10)));
             $scope.topTen = res.data.topTen;
           });
 
