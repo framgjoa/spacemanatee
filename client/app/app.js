@@ -1,7 +1,8 @@
 angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
-.controller('mapCtrl', ['$scope', '$element', 'Maps', 'Utility', function($scope, $element, Maps, Utility) {
-  //initialize the user input option selector
+.controller('mapCtrl', ['$scope', '$element', 'Utility', function($scope, $element, Utility) {
+
+  // Initializes the user input option selector
   $scope.optionSelections = [
     {name: 'Everything', value:""},
     {name: 'Food', value:"food"},
@@ -9,23 +10,35 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     {name: 'Shopping', value:"shopping"},
     {name: 'Medical', value:"medical"},
     {name: 'Gas', value:"gas"},
+    {name: 'Parks', value: "active, parks"},
     {name: 'Pets', value:"pets"}
   ];
-  //set default option filter to "food"
+
+  // Sets default filter to "food"
   $scope.optionFilter = $scope.optionSelections[1].value;
-  //initialize the geoCodeNotSuccessful to be used for determining valid continental destination or not
+
+  // Used for determining valid continental destination or not
   $scope.geoCodeNotSuccessful = false;
 
+  $scope.distance = "";
+  $scope.time = "";
+
+  // Cache will be to store the distances from origin for the TopTop attractions
+  // Since each will require a Google API query, in order to minimize re-queries,
+  // the initial result will be stored in cache
+  $scope.cache = {};
+
   $scope.appendWarningMsg = function(isInvalid) {
-    // invalid message template
+
+    // Invalid message template
     var pInvalid = angular.element("<p id='warningMsg'/>");
     pInvalid.text("Please choose a continental location and resubmit");
-    // valid message template
+
+    // Valid message template
     var pValid = angular.element("<p id='warningMsg'/>");
     pValid.text("");
-    //check to see if the location entered is invalid
-    //if location is invalid, then append invalid message 
-    // else, append a blank message 
+
+    // Append invalid string if the input is invalid
     if (isInvalid) {
       $element.find("main-area").append(pInvalid);
     } else {
@@ -33,91 +46,88 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     }
   };
 
-  $scope.submit = function(city) {
-    $scope.geoCodeNotSuccessful = false;  // every time when submit button is pressed, reset the geoCodeNotSuccessful to false
-    $element.find("main-area").empty();   // clear out the warning messages from previous location input
-    console.log("SCOPE ENTIRE: ", $scope.location);
-    var startGeo, endGeo;
 
-    calcRoute();
+  //Queries Google for directions services and generates map
+  $scope.calcRoute = function (start, end) {
+      console.log("Calculating Route...");
 
-    function calcRoute() {
-      // New directionsService object to interact with google maps API
-      var directionsService = new google.maps.DirectionsService();
+      // New directionsService object to interact with Google maps API
+      var directionsService = new google.maps.DirectionsService(start,end);
+
       // clear markers whenever new search
       for (var i = 0; i < markerArray.length; i++) {
         markerArray[i].setMap(null);
       }
 
-      // create object to send to Google to generate directions
-      var request = {
-        origin: $scope.location.start,
-        destination: $scope.location.end,
-        travelMode: google.maps.TravelMode.DRIVING
+      // Creates object to send to Google to generate directions, sub-route
+      var request = function(start, end){
+        return {
+        origin: start || $scope.location.start,
+        destination: end || $scope.location.end,
+        travelMode: google.maps.TravelMode.DRIVING};
       };
 
-      //send request to Google Maps Directions API with request object as data
-      directionsService.route(request, function(response, status) {
+        directionsService.route(request(), function(response, status) {
+
         // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
-          $scope.geoCodeNotSuccessful=false;  
-          //Update the map on index.html
+
+          $scope.geoCodeNotSuccessful=false;
+
+          //Updates the map on index.html
           directionsDisplay.setDirections(response);
 
-          console.log("DIRECTIONS RESPONSE: ", response);
-          console.log("LENGTH: ", response.routes[0].overview_path.length);
-          console.log("OVERVIEW PATH: ", response.routes[0].overview_path);
-
-          // objects to be sent to backend
-          var sendData = {
-            distance: response.routes[0].legs[0].distance.text,
+          // Data to be sent to backend
+          var mapData = {
+            // Use distance.value/1609.34 because distance.text is in mi for USA and in km elsewhere
+            distance: response.routes[0].legs[0].distance.value/1609.34,
             optionFilter: $scope.optionFilter,
-            waypoints: {}
+            waypoints: []
           };
 
-          //gather all points along route returned by Google in overview_path property
-          //and insert them into waypoints object to send to server
+          // Gathers all points along route returned by Google in overview_path property
+          // Inserts them into the mapData object
           for (var j = 0; j < response.routes[0].overview_path.length; j++) {
-            sendData.waypoints[j] = response.routes[0].overview_path[j].k + "," + response.routes[0].overview_path[j].D;
+            mapData.waypoints[j] = response.routes[0].overview_path[j].k + "," + response.routes[0].overview_path[j].D;
+
           }
 
-          console.log("sendData: ", sendData);
-          $scope.appendWarningMsg($scope.geoCodeNotSuccessful); // append the blank (no warning) message to main.html
+          $scope.distance = response.routes[0].legs[0].distance.text.replace('mi', 'miles').replace("km", "kilometers");
+          $scope.duration = response.routes[0].legs[0].duration.text;
 
-          // Send all waypoints along route to server
-          Maps.sendPost(sendData)
+          // Appends the blank (no warning) message to main.html
+          $scope.appendWarningMsg($scope.geoCodeNotSuccessful);
+
+          // Sends all waypoints along route to server
+          Utility.sendMapData(mapData)
+
+          // Receives Yelp reccomendations and displays as markers
           .then(function(res){
-            console.log("PROMISE OBJ: ", res.data.results);
-            // get back recommendations from Yelp and display as markers
             Utility.placemarkers(res.data.results);
             $scope.topTen = res.data.topTen;
-            console.log(res.data.results);
           });
+
         } else {
-          //Log the status code on error
-          console.log("Geocode was not successful: " + status);
-          //set the geoCodeNotSuccessful to true
+
+          // Sets the geoCodeNotSuccessful to true
           $scope.geoCodeNotSuccessful = true;
-          $scope.appendWarningMsg($scope.geoCodeNotSuccessful); // append the warning message to main.html
+
+          // Appends the warning message to main.html
+          $scope.appendWarningMsg($scope.geoCodeNotSuccessful);
         }
       });
-    }
-  };
-}])
-.factory('Maps', ['$http', function($http) {
-  //This function sends a POST to the server at route /csearch with all waypoints along route as data
-  var sendPost = function(routeObject){
-    return $http.post('/search', routeObject)
-      .then(function(response, error){
-        //POST request successfully sent and response code was returned
-        console.log('response: ', response);
-        console.log('error: ', error);
-        return response;
-      });
+     };
+
+
+  // Runs when a user hits the submit button
+  $scope.submit = function() {
+
+    var startGeo, endGeo;
+
+    $scope.geoCodeNotSuccessful = false;
+    $element.find("main-area").empty();
+
+    $scope.calcRoute($scope.location.start, $scope.location.end);
+
     };
-
-  return {
-    sendPost: sendPost
-  };
-
 }]);

@@ -1,8 +1,8 @@
 var yelp = require('./yelp');
 var key = require('../api/api_key');
-var coord = require('./coordinateHelpers');
+var coordHelpers = require('./coordinateHelpers');
 
-// create yelp client using Oauth
+// Creates Yelp client using Oauth
 var yelpClient = yelp.createClient({
   consumer_key: process.env.KEY || key.consumer_key,
   consumer_secret: process.env.CONSUMER_SECRET || key.consumer_secret,
@@ -13,56 +13,43 @@ var yelpClient = yelp.createClient({
 
 // Yelp search parameter configuration defaults
 var yelpProperty = {
-  term: "food",             // Type of business (food, restaurants, bars, hotels, etc.)
+  term: "food",             // Type of business (food, restaurants, bars, etc.)
   limit: 10,                // Number of entries returned from each call
   sort: 2,                  // Sort mode: 0=Best matched (default), 1=Distance, 2=Highest Rated
   radius_filter: 5*1609.34  // Search radius: 1 mile = 1609.3 meters, 5 miles is good for rural areas
 };
 
-function isAlreadyInArray(array, target) {
-  for (var i = 0 ; i < array.length; i++) {
-    if (array[i].name === target.name) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// check if a place is a common place to be filtered out
+// Checks if a location is too common and should be filtered out
 var commonFilter = ["McDonald's", "Burger King", "Jack in the Box", "Carl's Junior", "StarBucks", "Subway",
 "Pizza Hut", "Del Taco", "Taco Bell", "Chick-fil-A", "Farm", "Truck", "In-N-Out"];
 
-function isCommonPlace(businessEntry, commonFilter){
-  for (var i = 0; i < commonFilter.length; i++) {
-    if (businessEntry.name.indexOf(commonFilter[i]) > -1)
-      return true;
-  }
-  return false;
+var commonFilterHash = {};
+for (var i=0; i<commonFilter.length; i++) {
+  commonFilterHash[commonFilter[i]] = true;
 }
 
-// function to use yelp API to get the top choices based on longitude and latitude
+function isCommonPlace(businessEntry){
+  return !!commonFilterHash[businessEntry.name];
+}
+
+
+// Use Yelp API to get top locations (based on longitude and latitude)
 module.exports.searchYelp = function (req, res, googleCoords, distance, callback) {
-  //Counter variable which will keep track of how many Yelp calls have completed
-  //A separate counter is needed due to the asynchronous nature of web requests
-  var trimmedCoords = coord.trimGoogleCoord(googleCoords, distance);
-  var counter = 0;
-  // Array that stores all of the Yelp results from all calls to Yelp
-  var yelpResults = [];
 
-  // yelp search parameter configuration
-  yelpProperty.term = req.body.optionFilter;           // Type of business (food, restaurants, bars, hotels, etc.)
+  var yelpResults = [];      // Query results from Yelp
+  var completedQueries = 0;  // Number of completed Yelp Queries
 
-  if (distance <= 20) {
-    yelpProperty.radius_filter = 0.8 * 1609.34 ;
-  } else if (distance <= 40) {
-    yelpProperty.radius_filter = 2.5 * 1609.34;
-  } else {
-    yelpProperty.radius_filter = 5 * 1609.34;
-  }
+  var trimmedCoords = coordHelpers.trimGoogleCoord(googleCoords, distance);
 
-  //Request yelp for each point along route that is returned by filterGoogle.js
+  // Yelp search parameter configuration
+  yelpProperty.term = req.body.optionFilter;
+
+  // Sets radius_filter to distance (in miles) / 25, with a floor of 2 and a ceiling of 25
+  yelpProperty.radius_filter = Math.min(Math.max(distance/25, 2), 25) * 1609.34;
+
+  // Queries Yelp for each point returned by filterGoogle.js
+  // yelpClient.search is async, so closure scope maintains the value of i
   for(var i = 0; i < trimmedCoords.length; i++){
-    //yelpClient.search is asynchronous and so we must use a closure scope to maintain the value of i
     (function(i) {
       yelpClient.search({
         term: yelpProperty.term,
@@ -74,11 +61,11 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
         if (error) {
           console.log(error);
         }
-        //Push the data returned from Yelp into yelpResults array
+        //Pushes the data returned from Yelp into yelpResults array
         yelpResults[i] = data;
-        counter++;
+        completedQueries++;
         //After all yelp results are received call callback with those results
-        if(counter === trimmedCoords.length){
+        if(completedQueries === trimmedCoords.length){
           callback(yelpResults);
         }
      });
@@ -86,90 +73,88 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
   }
 };
 
-//Filter results returned from Yelp into an overall top 10
+
+// Filters Yelp results into an overall top 10
 module.exports.createTopResultsJSON = function(yelpResults, distance) {
   var allBusinesses = [];
-  var topResults = [];
-  var minRating = 0;
-  var evenSpreadResults =[];
 
-  //Push all businesses from yelpResults into one array for easy filtering
+  // Pushes all businesses from yelpResults into one array for easy filtering
   for(var i = 0; i < yelpResults.length; i++){
     if(yelpResults[i].businesses){
       allBusinesses = allBusinesses.concat(yelpResults[i].businesses);
     }
   }
-  //loop through each business and compare ratings, only push the overall top 10 into topResults
-  for(var j = 0;j < allBusinesses.length; j++){
-    //yelp includes some highly rated businesses well outside of the search radius, possibly a "featured business"
-    //if such a business is included, skip over it
-    if(allBusinesses[j].distance > yelpProperty.radius_filter){
-      continue;
-    }
-    //Push the first 10 businesses into topResults
-    if(topResults.length < 10){
-      topResults.push(allBusinesses[j]);
-    } else {
-      //compare ratings
-      for(var k = 0; k < topResults.length; k++){
-        // if the business is not already in the topResults;
-        // if not in the topResults, then proceed with comparing, else, skip the current business entry
-        if (!isAlreadyInArray(topResults, allBusinesses[j])) {
-          //Check rating
-          if(allBusinesses[j].rating > topResults[k].rating){
-            topResults[k] = allBusinesses[j];
-            //once a business is added to topResults, move on to the next business
-            break;
-            //if ratings are equal, choose the business with higher number of reviews
-          } else if(allBusinesses[j].rating === topResults[k].rating && allBusinesses[j].review_count > topResults[k].review_count){
-            topResults[k] = allBusinesses[j];
-            //once a business is added to topResults, move on to the next business
-            break;
-          }
-        }
+
+  // Checks if business is in range or is commonplace
+  allBusinesses = allBusinesses.filter(function(business) {
+    return business.distance <= yelpProperty.radius_filter && !isCommonPlace(business);
+  });
+
+  // Finds the top results algorithm
+  var findTopResults = function() {
+    var topResults = [];
+    var sortedResults;
+
+    // Compares ratings, and then reviews. Sort by string id afterwards for easy duplicate detection
+    sortedResults = allBusinesses.sort(function(a, b) {
+      return b.rating - a.rating || b.review_count - a.review_count ||
+        b.id > a.id ? 1 : b.id === a.id ? 0 : -1;
+    });
+
+    // Eliminate duplicates
+    for (var j=1; j<sortedResults.length; j++) {
+      if (sortedResults[j-1].name === sortedResults[j].name) {
+        sortedResults.splice(j, 1);
+        j--;
       }
     }
-  }
 
-  // start the evenSpread algorithm to create a new array of results, which will be combined later with the topResults
-  var startingCoord;  // keep track of starting coordinates
-  evenSpreadResults[0] = allBusinesses[1]; // push the starting point result to the array
-  var n = 0;
+    // Limits to top 30 results
+    topResults = sortedResults.slice(0, 30);
+    return topResults;
+  };
 
-  for (var m = 1; m < allBusinesses.length; m) {
-    // if next waypoint less than total distance/20 mi away
-    if (coord.calcDistance(evenSpreadResults[n], allBusinesses[m]) < (distance / 20)) {
-      // then skip
-      m++;
-    }
-    else { // if the next waypoint is greater than distance/20 mi away
-      if (allBusinesses[m].distance > yelpProperty.radius_filter || allBusinesses[m].rating < 4 ||
-        allBusinesses[m].review_count < 5 || isCommonPlace(allBusinesses[m], commonFilter)) {
-        // if the business distance is out of the searching radius,
-        // or if the rating is less than 4
-        // or if the review count is less than 5
-        // or if the place is deemed a common place deemed by the commonFilter
-        // then skip
-        m++;
+
+  // Finds results with the evenSpread algorithm
+  var findEvenSpreadResults = function() {
+
+    var evenSpreadResults =[];
+
+    // Pushes the starting point result to the array
+    evenSpreadResults[0] = allBusinesses[0];
+
+    for (var m = 1; m < allBusinesses.length; m++) {
+
+      // Skips waypoints less than total distance/20 mi away
+      if (coordHelpers.calcDistance(evenSpreadResults[evenSpreadResults.length-1], allBusinesses[m]) < (distance / 20)) {
+        continue;
       }
-      else {
-        // push the result to the array, start looking for the next entry
-        n++;
-        evenSpreadResults[n] = allBusinesses[m];
-        m++;
+
+      // Skips any business with a rating lower than 4
+      // Skips any business with less than 5 reviews
+      if (allBusinesses[m].rating < 4 || allBusinesses[m].review_count < 5) {
+        continue;
+      }
+
+      // Pushes the result to the array
+      evenSpreadResults.push(allBusinesses[m]);
+
+      // If we have 30 entries, skips the remaining
+      if (evenSpreadResults.length >= 20) {
+        break;
       }
     }
-    if (n >= 20 || m >= allBusinesses.length) { // if have 20 entries , exit the for loop
-      break;
-    }
-  }
+    return evenSpreadResults;
+  };
 
-  // combine the best results along the road with the even spread results along the roads
+
+  // Combines the best results along the road with the even spread results along the roads
+  var topResults = findTopResults();
+  var evenSpreadResults = findEvenSpreadResults();
   var finalResults = evenSpreadResults.concat(topResults);
 
-  var result = {
+  return {
     results: finalResults,
     topTen: topResults
   };
-  return result;
-}
+};
