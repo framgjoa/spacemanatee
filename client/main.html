@@ -66,9 +66,7 @@
         }
         setMap();
 
-        $.getJSON('http://ip-api.com/json/?callback=?', function(data) {
-          setMap(data);
-        });
+        $.getJSON('http://ip-api.com/json/?callback=?', setMap);
       }
 
       google.maps.event.addDomListener(window, 'load', initialize);
