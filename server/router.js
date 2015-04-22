@@ -6,12 +6,14 @@ var path = require('path');
 
 router.post('/search', function(req, res) {
   console.log('(POST "/search") Now searching the Yelp API...');
-  //call the google filter to return only the points along the route that are n distance apart
+
+  // Filters map results
   var googleFilterObj = filter(req.body);
 
   var googleCoords = googleFilterObj.filteredCoords;
   var distance = googleFilterObj.distance;
 
+  // Sends filtered results through Yelp and back to the client
   requestHandler.performSearch(req, res, googleCoords, distance);
 });
 
