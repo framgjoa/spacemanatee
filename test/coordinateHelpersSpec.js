@@ -12,8 +12,6 @@ describe('coordinateHelpers', function() {
   it('should calculate the correct distance', function() {
     var distance = coordHelpers.calcDistance(coordHelpers.parseGoogleCoord(points[0]), coordHelpers.parseGoogleCoord(points[9]));
     var actualDistance = 1.0317427825546628;
-    console.log('calc', distance);
-    console.log('actual', actualDistance);
     expect(Math.abs((actualDistance-distance)/actualDistance) < 0.01).to.equal(true);
   });
 });
