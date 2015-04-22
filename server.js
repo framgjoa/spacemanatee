@@ -1,7 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var app = express();
 var router = require('./server/router');
+var app = express();
 
 //set port variable to deployed port or 3456 for local host
 var port = process.env.PORT || 3456;
@@ -19,4 +19,4 @@ app.listen(port, function() {
   console.log("Listening on port " + port + "...");
 });
 
-
+module.exports = app;
