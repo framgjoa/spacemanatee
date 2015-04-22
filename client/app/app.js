@@ -51,15 +51,16 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
         markerArray[i].setMap(null);
       }
 
-      // create object to send to Google to generate directions
-      var request = {
-        origin: $scope.location.start,
-        destination: $scope.location.end,
-        travelMode: google.maps.TravelMode.DRIVING
+      // create object to send to Google to generate directions, sub-route
+      var request = function(start, end){ //start and end should be in the format of ?? lat/long objects ??
+        return {
+        origin: start || $scope.location.start,
+        destination: end || $scope.location.end,
+        travelMode: google.maps.TravelMode.DRIVING};
       };
 
       // send request to Google Maps Directions API with request object as data
-      directionsService.route(request, function(response, status) {
+      directionsService.route(request(), function(response, status) {
         // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
           $scope.geoCodeNotSuccessful=false;
