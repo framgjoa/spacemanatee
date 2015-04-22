@@ -15,21 +15,22 @@ angular.module('app.service', [])
       return description;
   };
 
-  //
+  // Opens an info window when the marker is clicked on
   var attachInstructionText = function(marker, text) {
     google.maps.event.addListener(marker, 'click', function() {
-      // Open an info window when the marker is clicked on
       stepDisplay.setContent(text);
       stepDisplay.open(map, marker);
     });
   };
 
+  // Places each marker on the map
   var placemarkers = function(places) {
-    //Place each marker on the map
+
     for (var i = 0; i < places.length; i++) {
        setDelay(i, places);
     }
-    // set delay for dropping each marker
+
+    // Sets s delay for dropping each marker
     function setDelay(i, places) {
       setTimeout(function() {
         var lat = places[i].location.coordinate.latitude;
@@ -42,7 +43,8 @@ angular.module('app.service', [])
           animation: google.maps.Animation.DROP,
           icon: "images/smPin1.png"
         });
-        //Setup the pop-up box that opens when you click a marker
+
+        // Sets the pop-up box for clicking a marker
         attachInstructionText(marker, description);
         markerArray[i] = marker;
       }, i * 300);
