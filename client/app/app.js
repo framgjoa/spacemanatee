@@ -28,6 +28,17 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
   // the initial result will be stored in cache
   $scope.cache = {};
 
+  // Takes the TopTop array and calculates cumulative distance per location
+  // Caches result so the refresh function does not re-query to save API time
+  $scope.cumulativeDistance = function(){
+    console.log("topTen: ", $scope.topTen);
+    for (var i = 0; i < $scope.topTen.length; i++){
+      console.log("Cumulative Distance: ",  i, $scope.topTen);
+    }
+
+
+  };
+
   $scope.appendWarningMsg = function(isInvalid) {
 
     // Invalid message template
@@ -89,7 +100,6 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           // Inserts them into the mapData object
           for (var j = 0; j < response.routes[0].overview_path.length; j++) {
             mapData.waypoints[j] = response.routes[0].overview_path[j].k + "," + response.routes[0].overview_path[j].D;
-
           }
 
           $scope.distance = response.routes[0].legs[0].distance.text.replace('mi', 'miles').replace("km", "kilometers");
@@ -105,8 +115,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           .then(function(res){
             Utility.placemarkers(res.data.results);
             $scope.topTen = res.data.topTen;
+            console.log("CB topTen: ", $scope.topTen)
           });
-
         } else {
 
           // Sets the geoCodeNotSuccessful to true
@@ -129,5 +139,6 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
     $scope.calcRoute($scope.location.start, $scope.location.end);
 
+    $scope.cumulativeDistance();
     };
 }]);
