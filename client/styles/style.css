@@ -6,6 +6,37 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
   float: center;
   padding: 15px 0 15px 0;
 }
+/*************************************/
+/*Yelp Card Stylings!*/
+/*************************************/
+
+#topTen {
+  /*style="margin-left: 20%;margin-right: 20%;vertical-align: middle;text-align: center;"*/
+  margin-left: 20%;
+  margin-right: 20%;
+  vertical-align: middle;
+  text-align: center;
+}
+
+#name {
+  /*style="font-family: 'Rancho', helvetica, arial;font-size:1.5em;padding-bottom:10px;"*/
+  font-family: 'Rancho', helvetica, arial;
+  font-size:1.5em;
+  padding-bottom:10px;
+}
+#address {
+  /*style="font-family: 'Rancho', helvetica, arial;font-size:1.5em;padding-bottom:10px;"*/
+  font-family: 'Rancho', helvetica, arial;
+  font-size:1em;
+  padding-bottom:10px;
+}
+
+#thumbnail {
+  /* style="float:left;padding:5px;"*/
+  border-radius: 10px;
+  float: left;
+  padding: 5px;
+}
 
 #journey {
   text-align: center;

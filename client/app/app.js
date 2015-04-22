@@ -26,13 +26,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     // valid message template
     var pValid = angular.element("<p id='warningMsg'/>");
     pValid.text("");
-<<<<<<< HEAD
     // check to see if the location entered is invalid
     // if location is invalid, then append invalid message
-=======
-    //check to see if the location entered is invalid
-    //if location is invalid, then append invalid message
->>>>>>> d8009f409d13c4dab25b72e69ea003835eea047d
     // else, append a blank message
     if (isInvalid) {
       $element.find("main-area").append(pInvalid);
