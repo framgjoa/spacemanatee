@@ -78,22 +78,22 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
 module.exports.createTopResultsJSON = function(yelpResults, distance) {
   var allBusinesses = [];
 
+  // Pushes all businesses from yelpResults into one array for easy filtering
+  for(var i = 0; i < yelpResults.length; i++){
+    if(yelpResults[i].businesses){
+      allBusinesses = allBusinesses.concat(yelpResults[i].businesses);
+    }
+  }
+
+  // Checks if business is in range or is commonplace
+  allBusinesses = allBusinesses.filter(function(business) {
+    return business.distance <= yelpProperty.radius_filter && !isCommonPlace(business);
+  });
+
   // Finds the top results algorithm
   var findTopResults = function() {
     var topResults = [];
     var sortedResults;
-
-    // Pushes all businesses from yelpResults into one array for easy filtering
-    for(var i = 0; i < yelpResults.length; i++){
-      if(yelpResults[i].businesses){
-        allBusinesses = allBusinesses.concat(yelpResults[i].businesses);
-      }
-    }
-
-    // Checks if business is in range or is commonplace
-    allBusinesses = allBusinesses.filter(function(business) {
-      return business.distance <= yelpProperty.radius_filter && !isCommonPlace(business);
-    });
 
     // Compares ratings, and then reviews. Sort by string id afterwards for easy duplicate detection
     sortedResults = allBusinesses.sort(function(a, b) {
@@ -111,6 +111,7 @@ module.exports.createTopResultsJSON = function(yelpResults, distance) {
 
     // Limits to top 30 results
     topResults = sortedResults.slice(0, 30);
+    return topResults;
   };
 
 
