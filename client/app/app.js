@@ -81,7 +81,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
           // Data to be sent to backend
           var mapData = {
-            distance: response.routes[0].legs[0].distance.text,
+            // Use distance.value/1609.34 because distance.text is in mi for USA and in km elsewhere
+            distance: response.routes[0].legs[0].distance.value/1609.34,
             optionFilter: $scope.optionFilter,
             waypoints: []
           };

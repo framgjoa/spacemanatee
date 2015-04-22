@@ -44,13 +44,8 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
   // yelp search parameter configuration
   yelpProperty.term = req.body.optionFilter;           // Type of business (food, restaurants, bars, hotels, etc.)
 
-  if (distance <= 20) {
-    yelpProperty.radius_filter = 0.8 * 1609.34 ;
-  } else if (distance <= 40) {
-    yelpProperty.radius_filter = 2.5 * 1609.34;
-  } else {
-    yelpProperty.radius_filter = 5 * 1609.34;
-  }
+  // Sets radius_filter to distance (in miles) / 25, with a floor of 2 and a ceiling of 25
+  yelpProperty.radius_filter = Math.min(Math.max(distance/25, 2), 25) * 1609.34;
 
   //Request yelp for each point along route that is returned by filterGoogle.js
   for(var i = 0; i < trimmedCoords.length; i++){
@@ -98,9 +93,10 @@ module.exports.createTopResultsJSON = function(yelpResults, distance) {
     return business.distance <= yelpProperty.radius_filter && !isCommonPlace(business);
   });
 
-  // Compares ratings, and then reviews
+  // Compares ratings, and then reviews. Sort by string id afterwards for easy duplicate detection
   sortedResults = allBusinesses.sort(function(a, b) {
-    return b.rating - a.rating || b.review_count - a.review_count;
+    return b.rating - a.rating || b.review_count - a.review_count ||
+      b.id > a.id ? 1 : b.id === a.id ? 0 : -1;
   });
 
   // Eliminate duplicates
@@ -124,7 +120,7 @@ module.exports.createTopResultsJSON = function(yelpResults, distance) {
       continue;
     }
     if (allBusinesses[m].rating < 4 || allBusinesses[m].review_count < 5) {
-      // or if the rating is less than 4
+      // if the rating is less than 4
       // or if the review count is less than 5
       // then skip
       continue;
