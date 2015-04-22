@@ -105,15 +105,16 @@
 
       <div class="row">
         <div class="col-lg-12">
-          <div id="topTen" style="margin-left: 20%;margin-right: 20%;vertical-align: middle;text-align: center;">
+          <div id="topTen">
             <div ng-if="!!topTen" ng-model="topTen">
               <h1>You're gonna be driving {{distance}} (or {{duration}}).  Split it up by visiting our Top 10 favorite spots along the journey! </h1><br>
               <div ng-repeat= "top in topTen" id="topTenList">
                 <div ng-class="{'oddTop10': $odd , 'evenTop10': $even}">
 
-                  <img ng-src='{{top["image_url"] ? top["image_url"] : "./images/default.jpg"}}' alt="Sites image not yet available" style="float:left;padding:5px;"/><br>
+                  <img id="thumbnail" ng-src='{{top["image_url"] ? top["image_url"] : "./images/default.jpg"}}' alt="Sites image not yet available"/><br>
                   <div style="padding:5px 0 0 0">
-                    <div style="font-family: 'Rancho', helvetica, arial;font-size:1.5em;padding-bottom:10px;">{{top.name}} </div>
+                    <div id="name">{{top.name}} </div>
+                    <div id="address">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
                     <img ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" /><br>
                     <a ng-href='{{top["url"]}}' target="_blank"> Visit on Yelp</a>
                   </div>
