@@ -50,20 +50,18 @@
                 <img id="thumbnail" ng-src='{{top["image_url"] ? top["image_url"] : "./images/default.jpg"}}' alt="Sites image not yet available"/><br>
                 <div style="padding:5px 0 0 0">
 
-                  <div id="name">{{top.name}} </div>
+                  <a ng-href='{{top["url"]}}' target="_blank"><div id="name">{{top.name}}</div></a>
                   <div id="address">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
-                  <img ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" /><br>
-                  <a ng-href='{{top["url"]}}' target="_blank"> Visit on Yelp</a>
+                  <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" /><br>
+                  <div id="removeButton"><img src="./images/removeButton.gif"></div>
                 </div>
                 <br clear="all">
-
               </div>
             </div>
           </div>
           <br>
           <br>
         </div>
-
       </div><!-- col-lg-12 -->
     </div><!-- row -->
   </div><!-- container-fluid -->
@@ -90,17 +88,13 @@
     var directionsDisplay;
     var markerArray = [];
     var stepDisplay;
-
     function initialize() {
       var input1 = document.getElementById('start');
       var input2 = document.getElementById('end');
-
       var autocomplete1 = new google.maps.places.Autocomplete(input1, null);
       var autocomplete2 = new google.maps.places.Autocomplete(input2, null);
-
       directionsDisplay = new google.maps.DirectionsRenderer();
       stepDisplay = new google.maps.InfoWindow();
-
       var setMap = function(data) {
         // Default is needed in case of adblock
         var mapOptions = {
@@ -108,17 +102,13 @@
           zoom: 10,
           disableDefaultUI:false
         };
-
         map = new google.maps.Map(document.getElementById('map-canvas'),
           mapOptions);
-
         directionsDisplay.setMap(map);
       };
       setMap();
-
       $.getJSON('http://ip-api.com/json/?callback=?', setMap);
     }
-
     google.maps.event.addDomListener(window, 'load', initialize);
   </script>
 

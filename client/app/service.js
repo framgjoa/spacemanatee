@@ -4,6 +4,7 @@ angular.module('app.service', [])
 
   // Generates a view to display the restaurant image and link
   var renderView = function(i, places) {
+
       var description = '<div class="descriptionDiv">' +
           '<a href="'+places[i].url +'" target="_blank">' + '<h1 class="place-name">' + places[i].name + '</h1></a>' +
           '<div style="padding:5px;font-weight:bold;">' + 'Yelp Rating:&nbsp;&nbsp;' +
