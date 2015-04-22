@@ -152,10 +152,9 @@ module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
   // Combines the best results along the road with the even spread results along the roads
   var topResults = findTopResults();
   var evenSpreadResults = findEvenSpreadResults();
-  var finalResults = evenSpreadResults.concat(topResults);
 
   return {
-    results: finalResults,
+    results: evenSpreadResults,
     topTen: topResults
   };
 };
