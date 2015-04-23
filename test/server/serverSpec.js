@@ -1,6 +1,6 @@
 var chai = require('chai');
 var request = require('supertest');
-var app = require('../server.js');
+var app = require('../../server.js');
 
 var assert = chai.assert;
 var should = chai.should();
@@ -12,7 +12,7 @@ after(function () {
 
 });
 
-describe('Server Routes', function(){
+describe('Tests Basic Routes', function(){
 
   it('should successfully get the home page', function(done) {
     request(app)
@@ -20,6 +20,36 @@ describe('Server Routes', function(){
       .end(function(error, response){
         if(error){ throw error; }
         response.status.should.equal(200);
+        done();
+      });
+  });
+
+  it('should successfully get the index page', function(done) {
+    request(app)
+      .get('/main')
+      .end(function(error, response){
+        if(error){ throw error; }
+        response.status.should.equal(200);
+        done();
+      });
+  });
+
+  it('should successfully redirect bad GET requests to the home page', function(done) {
+    request(app)
+      .get('/asdaasvasd')
+      .end(function(error, response){
+        if(error){ throw error; }
+        response.status.should.equal(302);
+        done();
+      });
+  });
+
+  it('should successfully redirect bad POST requests to the home page', function(done) {
+    request(app)
+      .post('/asdaasvasd')
+      .end(function(error, response){
+        if(error){ throw error; }
+        response.status.should.equal(302);
         done();
       });
   });
