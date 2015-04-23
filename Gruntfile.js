@@ -19,6 +19,7 @@ module.exports = function(grunt){
 
     // Test
     jshint: {
+      options: {loopfunc: true},
       files: ['client/app/*.js', 'server/**/*.js']
     },
 
@@ -77,7 +78,6 @@ module.exports = function(grunt){
     'concat',
     'uglify',
     'jshint',
-    'mochaTest',
     'nodemon'
   ]);
 
