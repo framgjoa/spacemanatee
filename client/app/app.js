@@ -117,7 +117,13 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
         }
       });
      };
+  // Declaring the top ten arrayu that we can reference later
+  // var topTenArr;
 
+  // var removeSelection = function(index) {
+  //   topTenArr.splice(index, 0);
+  //   return topTenArr;
+  // }
 
   // Runs when a user hits the submit button
   $scope.submit = function() {
