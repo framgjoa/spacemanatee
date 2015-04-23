@@ -116,7 +116,7 @@ module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
   // Finds results with the evenSpread algorithm
   var findEvenSpreadResults = function() {
 
-    // Sort by distance to start to check for duplicates. Problematic if optimal path is windy
+    // Sort by distance to start to ensure spread. Problematic if optimal path is windy
     allBusinesses.sort(function(a, b) {
       return coordHelpers.calcDistance(coordHelpers.parseGoogleCoord(start), a) - coordHelpers.calcDistance(coordHelpers.parseGoogleCoord(start), b);
     });
@@ -128,7 +128,7 @@ module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
 
     for (var m = 1; m < allBusinesses.length; m++) {
 
-      // Skips waypoints less than total distance/20 mi away
+      // Skips waypoints less than total distance/20 away
       if (coordHelpers.calcDistance(evenSpreadResults[evenSpreadResults.length-1], allBusinesses[m]) < (distance / 20)) {
         continue;
       }

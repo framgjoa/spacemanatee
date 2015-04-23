@@ -25,7 +25,9 @@ angular.module('app.service', [])
   };
 
   // Places each marker on the map
-  var placemarkers = function(places) {
+  var placemarkers = function(places, icon, offset) {
+    icon = icon || "Red";
+    offset = offset || 0;
 
     for (var i = 0; i < places.length; i++) {
        setDelay(i, places);
@@ -42,13 +44,14 @@ angular.module('app.service', [])
           map: map,
           position: new google.maps.LatLng(lat,lng),
           animation: google.maps.Animation.DROP,
-          icon: "images/smPin1.png"
+          icon: "images/smPin"+icon+".png",
+          zIndex: i+offset
         });
 
         // Sets the pop-up box for clicking a marker
         attachInstructionText(marker, description);
         markerArray[i] = marker;
-      }, i * 300);
+      }, (i+offset) * 300);
     }
   };
 
