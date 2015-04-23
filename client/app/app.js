@@ -30,9 +30,12 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
   // Takes the TopTop array and calculates cumulative distance per location
   // Caches result so the refresh function does not re-query to save API time
+  // Should assume known origin from $scope
+  // Assigns cumulativeDist property to each topTop in cache
   // Start and end should be {latitude: value, longitude: value2} objects
-  $scope.cumulativeDistance = function(start, end){
-    console.log("topTen: ", $scope.topTen);
+  //
+  $scope.cumulativeDistance = function(){
+    //console.log("topTen: ", $scope.topTen);
     for (var i = 0; i < $scope.topTen.length; i++){
       console.log("Cumulative Distance: ",  i, $scope.topTen[i]);
 
@@ -44,7 +47,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     };
 
     // Need to check if this object is populating correctly and has waypoints & routes
-    // TO-DO: directionsService not defined
+    // TO-DO: directionsService not defined??
+    var directionsService = new google.maps.DirectionsService();
     var subRoute = directionsService.route(tempRequest, function(result, status) {
       if (status == google.maps.DirectionsStatus.OK) {
         directionsDisplay.setDirections(result);
@@ -56,8 +60,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
       for (i = 0; i < myroute.legs.length; i++) {
         total += myroute.legs[i].distance.value;
       }
-      total = total / 1000.
-      document.getElementById("total").innerHTML = total + " km";
+      total = total / 1000; //m convereted to km? Need to reconvert to mi
+      console.log("Total Distance inside compute: ", total,  "km");
     }
 
     console.log("Total Distance: ", computeTotalDistance(subRoute) );
@@ -86,6 +90,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
 
   //Queries Google for directions services and generates map
+  //TO-DO: verify start / end are objects that Google API can use
+  //
   $scope.calcRoute = function (start, end) {
       console.log("Calculating Route...");
 
@@ -143,6 +149,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
             Utility.placemarkers(res.data.results);
             Utility.placemarkers(res.data.topTen.slice(0, 10), 'Blue', res.data.results.length);
             $scope.topTen = res.data.topTen;
+
             $scope.cumulativeDistance();
 
           });
