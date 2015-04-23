@@ -32,17 +32,14 @@ Client.prototype.get = function(resource, params, callback) {
   );
 };
 
-/*
-Exampe:
-yelp.search({term: "food", location: "Montreal"}, function(error, data) {});
-*/
+// Example: yelp.search({term: "food", location: "Montreal"}, function(error, data) {});
 Client.prototype.search = function(params, callback) {
   return this.get('search', params, callback);
 };
 
 
 
-// @see http://www.yelp.com/developers/documentation/v2/authentication
+// http://www.yelp.com/developers/documentation/v2/authentication
 module.exports.createClient = function(oauth_config) {
   return new Client(oauth_config);
 };

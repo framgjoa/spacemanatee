@@ -71,9 +71,6 @@ module.exports.calcMidpoints = function(pt1, pt2, totalDistance) {
     var lat = Math.atan2(coordsCombined.z, hyp);
     results.push(lat.toDeg()+','+lon.toDeg());
   }
-  if (results.length) {
-    console.log(results);
-  }
   return results;
 };
 

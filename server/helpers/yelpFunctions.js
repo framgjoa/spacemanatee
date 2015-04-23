@@ -21,7 +21,9 @@ var yelpProperty = {
 
 // Checks if a location is too common and should be filtered out
 var commonFilter = ["McDonald's", "Burger King", "Jack in the Box", "Carl's Junior", "StarBucks", "Subway",
-"Pizza Hut", "Del Taco", "Taco Bell", "Chick-fil-A", "Farm", "Truck", "In-N-Out"];
+"Pizza Hut", "Del Taco", "Taco Bell", "Chick-fil-A", "Farm", "Truck", "In-N-Out", "Wendys", "Arbys", "KFC",
+"Sonic", "Dairy Queen", "Chevron", "Popeyes", "Cracker Barrel", "Quiznos", "IHOP",
+"International House of Pancakes", "Dennys"];
 
 var commonFilterHash = {};
 for (var i=0; i<commonFilter.length; i++) {
@@ -152,10 +154,9 @@ module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
   // Combines the best results along the road with the even spread results along the roads
   var topResults = findTopResults();
   var evenSpreadResults = findEvenSpreadResults();
-  var finalResults = evenSpreadResults.concat(topResults);
 
   return {
-    results: finalResults,
+    results: evenSpreadResults,
     topTen: topResults
   };
 };
