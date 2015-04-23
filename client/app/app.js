@@ -1,7 +1,6 @@
 angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
 .controller('mapCtrl', ['$scope', '$element', 'Utility', function($scope, $element, Utility) {
-
   // Initializes the user input option selector
   $scope.optionSelections = [
     {name: 'Everything', value:""},
@@ -31,12 +30,20 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
   // Takes the TopTop array and calculates cumulative distance per location
   // Caches result so the refresh function does not re-query to save API time
   $scope.cumulativeDistance = function(){
-    console.log("topTen: ", $scope.topTen);
-    for (var i = 0; i < $scope.topTen.length; i++){
-      console.log("Cumulative Distance: ",  i, $scope.topTen);
+  //   console.log("topTen: ", $scope.topTen);
+  //   for (var i = 0; i < $scope.topTen.length; i++){
+  //     console.log("Cumulative Distance: ",  i, $scope.topTen);
+  //   }
+
+
+  };
+
+  $scope.remove = function($index) {
+    $scope.topTen.splice($index, 1);
+    markerArrayTop.splice($index, 1)[0].setMap(null);
+    if ($scope.topTen.length >= 10) {
+      Utility.placemarkers($scope.topTen[9], "top");
     }
-
-
   };
 
   $scope.appendWarningMsg = function(isInvalid) {
@@ -66,8 +73,11 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
       var directionsService = new google.maps.DirectionsService(start,end);
 
       // clear markers whenever new search
-      for (var i = 0; i < markerArray.length; i++) {
-        markerArray[i].setMap(null);
+      for (var i = 0; i < markerArraySpread.length; i++) {
+        markerArraySpread[i].setMap(null);
+      }
+      for (var j = 0; j < markerArrayTop.length; j++) {
+        markerArrayTop[j].setMap(null);
       }
 
       // Creates object to send to Google to generate directions, sub-route
@@ -114,9 +124,9 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           // Receives Yelp recommendations and displays as markers
           .then(function(res){
             Utility.placemarkers(res.data.results);
-            Utility.placemarkers(res.data.topTen.slice(0, 10), 'Blue', res.data.results.length);
+            Utility.placemarkers(res.data.topTen.slice(0, 10), 'top', res.data.results.length);
             $scope.topTen = res.data.topTen;
-            console.log("CB topTen: ", $scope.topTen)
+            console.log("CB topTen: ", $scope.topTen);
           });
         } else {
 
