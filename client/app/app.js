@@ -101,9 +101,10 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           // Sends all waypoints along route to server
           Utility.sendMapData(mapData)
 
-          // Receives Yelp reccomendations and displays as markers
+          // Receives Yelp recommendations and displays as markers
           .then(function(res){
-            Utility.placemarkers(res.data.results.concat(res.data.topTen.slice(0, 10)));
+            Utility.placemarkers(res.data.results);
+            Utility.placemarkers(res.data.topTen.slice(0, 10), 'smPinBlue', res.data.results.length);
             $scope.topTen = res.data.topTen;
           });
 
