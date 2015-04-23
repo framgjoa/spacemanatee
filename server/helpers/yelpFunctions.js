@@ -21,7 +21,9 @@ var yelpProperty = {
 
 // Checks if a location is too common and should be filtered out
 var commonFilter = ["McDonald's", "Burger King", "Jack in the Box", "Carl's Junior", "StarBucks", "Subway",
-"Pizza Hut", "Del Taco", "Taco Bell", "Chick-fil-A", "Farm", "Truck", "In-N-Out"];
+"Pizza Hut", "Del Taco", "Taco Bell", "Chick-fil-A", "Farm", "Truck", "In-N-Out", "Wendys", "Arbys", "KFC",
+"Sonic", "Dairy Queen", "Chevron", "Popeyes", "Cracker Barrel", "Quiznos", "IHOP", "International House
+of Pancakes", "Dennys"];
 
 var commonFilterHash = {};
 for (var i=0; i<commonFilter.length; i++) {
