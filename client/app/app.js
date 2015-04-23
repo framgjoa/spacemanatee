@@ -30,11 +30,38 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
   // Takes the TopTop array and calculates cumulative distance per location
   // Caches result so the refresh function does not re-query to save API time
-  $scope.cumulativeDistance = function(){
+  // Start and end should be {latitude: value, longitude: value2} objects
+  $scope.cumulativeDistance = function(start, end){
     console.log("topTen: ", $scope.topTen);
     for (var i = 0; i < $scope.topTen.length; i++){
-      console.log("Cumulative Distance: ",  i, $scope.topTen);
+      console.log("Cumulative Distance: ",  i, $scope.topTen[i]);
+
     }
+    var tempRequest = {
+      origin:start,
+      destination:end,
+      travelMode: google.maps.TravelMode.DRIVING
+    };
+
+    // Need to check if this object is populating correctly and has waypoints & routes
+    // TO-DO: directionsService not defined
+    var subRoute = directionsService.route(tempRequest, function(result, status) {
+      if (status == google.maps.DirectionsStatus.OK) {
+        directionsDisplay.setDirections(result);
+    }
+
+    function computeTotalDistance(result) {
+      var total = 0;
+      var myroute = result.routes[0];
+      for (i = 0; i < myroute.legs.length; i++) {
+        total += myroute.legs[i].distance.value;
+      }
+      total = total / 1000.
+      document.getElementById("total").innerHTML = total + " km";
+    }
+
+    console.log("Total Distance: ", computeTotalDistance(subRoute) );
+  });
 
 
   };
@@ -115,7 +142,8 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           .then(function(res){
             Utility.placemarkers(res.data.results);
             $scope.topTen = res.data.topTen;
-            console.log("CB topTen: ", $scope.topTen)
+            $scope.cumulativeDistance();
+
           });
         } else {
 
@@ -139,6 +167,5 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
     $scope.calcRoute($scope.location.start, $scope.location.end);
 
-    $scope.cumulativeDistance();
     };
 }]);
