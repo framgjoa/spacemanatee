@@ -24,9 +24,15 @@ angular.module('app.service', [])
     });
   };
 
+  String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
   // Places each marker on the map
   var placemarkers = function(places, icon, offset) {
-    icon = icon || "Red";
+    icon = icon || {};
+    icon.size = icon.size || 'sm';
+    icon.color = icon.color || 'black';
     offset = offset || 0;
 
     for (var i = 0; i < places.length; i++) {
@@ -44,7 +50,7 @@ angular.module('app.service', [])
           map: map,
           position: new google.maps.LatLng(lat,lng),
           animation: google.maps.Animation.DROP,
-          icon: "images/smPin"+icon+".png",
+          icon: "images/pins/"+icon.size+"Pin"+icon.color.capitalizeFirstLetter()+".png",
           zIndex: i+offset
         });
 

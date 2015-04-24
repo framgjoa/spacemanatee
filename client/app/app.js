@@ -113,10 +113,10 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
           // Receives Yelp recommendations and displays as markers
           .then(function(res){
-            Utility.placemarkers(res.data.results);
-            Utility.placemarkers(res.data.topTen.slice(0, 10), 'Blue', res.data.results.length);
+            Utility.placemarkers(res.data.results, {size: 'sm', color: 'brown'});
+            Utility.placemarkers(res.data.topTen.slice(0, 10), {size: 'lg', color: 'gold'}, res.data.results.length);
             $scope.topTen = res.data.topTen;
-            console.log("CB topTen: ", $scope.topTen)
+            console.log("CB topTen: ", $scope.topTen);
           });
         } else {
 
