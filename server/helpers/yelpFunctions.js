@@ -78,10 +78,14 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
 module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
   var allBusinesses = [];
 
+  var fs = require('fs');
+  fs.writeFileSync(__dirname+"/../../yelp.json", "");
+
   // Pushes all businesses from yelpResults into one array for easy filtering
   for(var i = 0; i < yelpResults.length; i++){
     if(yelpResults[i].businesses){
       allBusinesses = allBusinesses.concat(yelpResults[i].businesses);
+      fs.appendFileSync(__dirname+"/../../yelp.json", JSON.stringify({i: yelpResults[i].businesses}));
     }
   }
 
