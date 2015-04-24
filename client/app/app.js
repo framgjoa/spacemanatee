@@ -1,7 +1,6 @@
 angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
 .controller('mapCtrl', ['$scope', '$element', 'Utility', function($scope, $element, Utility) {
-
   // Initializes the user input option selector
   $scope.optionSelections = [
     {name: 'Everything', value:""},
@@ -23,51 +22,41 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
   $scope.distance = "";
   $scope.time = "";
 
-  // Cache will be to store the distances from origin for the TopTop attractions
-  // Since each will require a Google API query, in order to minimize re-queries,
-  // the initial result will be stored in cache
-  $scope.cache = {};
+  // Calculates the cumulative distance to each TopTop attraction from origin
+  // Assigns the cumDist property to each TopTen object
 
-  // Takes the TopTop array and calculates cumulative distance per location
-  // Caches result so the refresh function does not re-query to save API time
-  // Should assume known origin from $scope
-  // Assigns cumulativeDist property to each topTop in cache
-  // Start and end should be {latitude: value, longitude: value2} objects
-  //
-  $scope.cumulativeDistance = function(){
-    //console.log("topTen: ", $scope.topTen);
-    for (var i = 0; i < $scope.topTen.length; i++){
-      console.log("Cumulative Distance: ",  i, $scope.topTen[i]);
+  $scope.cumulativeDistance = function(start, end, i){
 
-    }
     var tempRequest = {
-      origin:start,
-      destination:end,
+      origin: start,
+      destination: end,
       travelMode: google.maps.TravelMode.DRIVING
     };
 
-    // Need to check if this object is populating correctly and has waypoints & routes
-    // TO-DO: directionsService not defined??
     var directionsService = new google.maps.DirectionsService();
     var subRoute = directionsService.route(tempRequest, function(result, status) {
       if (status == google.maps.DirectionsStatus.OK) {
-        directionsDisplay.setDirections(result);
-    }
+        //console.log("Status OK");
 
-    function computeTotalDistance(result) {
-      var total = 0;
-      var myroute = result.routes[0];
-      for (i = 0; i < myroute.legs.length; i++) {
-        total += myroute.legs[i].distance.value;
+        var tempResult = result;
+        //console.log("TempResult.routes: ", tempResult["routes"]["0"]["legs"]["0"]["distance"]["text"]);
+        //console.log("Result inside request: ", tempResult.routes[0].legs[0].distance.text);
+
+        // Store distance based on location in array for each TopTen
+        $scope.topTen[i].cumDist = tempResult.routes[0].legs[0].distance.text;
+        //console.log("TopTen[",i,"] ", $scope.topTen[i].cumDist);
+
       }
-      total = total / 1000; //m convereted to km? Need to reconvert to mi
-      console.log("Total Distance inside compute: ", total,  "km");
+    });
+  };
+
+
+  $scope.remove = function($index) {
+    $scope.topTen.splice($index, 1);
+    markerArrayTop.splice($index, 1)[0].setMap(null);
+    if ($scope.topTen.length >= 10) {
+      Utility.placemarkers($scope.topTen[9], "top");
     }
-
-    console.log("Total Distance: ", computeTotalDistance(subRoute) );
-  });
-
-
   };
 
   $scope.appendWarningMsg = function(isInvalid) {
@@ -88,19 +77,37 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     }
   };
 
+  // Callback function
+  $scope.overallRouteCalc = function(res){
+    Utility.placemarkers(res.data.results);
+    Utility.placemarkers(res.data.topTen.slice(0, 10), 'top', res.data.results.length);
+    $scope.topTen = res.data.topTen;
+
+    // Passing a postal code as use of the Lat/Long object rejected by Google API
+    // Use of postal code is a quicker approximation. Works outside of US
+
+    //Loops over all topTen results and assigns their cumulative distance
+    for(var i = 0; i <$scope.topTen.length; i++){
+      $scope.cumulativeDistance($scope.location.start, $scope.topTen[i].location.postal_code, i);
+    }
+    //console.log("Final topTen objects", $scope.topTen);
+  };
 
   //Queries Google for directions services and generates map
-  //TO-DO: verify start / end are objects that Google API can use
-  //
-  $scope.calcRoute = function (start, end) {
-      console.log("Calculating Route...");
+  $scope.calcRoute = function (start, end, cb) {
+      //console.log("Calculating Route...");
+
+      cb = cb || $scope.overallRouteCalc;
 
       // New directionsService object to interact with Google maps API
       var directionsService = new google.maps.DirectionsService(start,end);
 
       // clear markers whenever new search
-      for (var i = 0; i < markerArray.length; i++) {
-        markerArray[i].setMap(null);
+      for (var i = 0; i < markerArraySpread.length; i++) {
+        markerArraySpread[i].setMap(null);
+      }
+      for (var j = 0; j < markerArrayTop.length; j++) {
+        markerArrayTop[j].setMap(null);
       }
 
       // Creates object to send to Google to generate directions, sub-route
@@ -112,8 +119,6 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
       };
 
         directionsService.route(request(), function(response, status) {
-
-        // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
 
           $scope.geoCodeNotSuccessful=false;
@@ -145,14 +150,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
           Utility.sendMapData(mapData)
 
           // Receives Yelp recommendations and displays as markers
-          .then(function(res){
-            Utility.placemarkers(res.data.results);
-            Utility.placemarkers(res.data.topTen.slice(0, 10), 'Blue', res.data.results.length);
-            $scope.topTen = res.data.topTen;
-
-            $scope.cumulativeDistance();
-
-          });
+          .then(cb);
         } else {
 
           // Sets the geoCodeNotSuccessful to true
@@ -174,6 +172,5 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     $element.find("main-area").empty();
 
     $scope.calcRoute($scope.location.start, $scope.location.end);
-
     };
 }]);
