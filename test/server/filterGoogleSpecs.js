@@ -1,5 +1,6 @@
 var chai = require('chai');
 var filter = require('../../server/filters/filterGoogle');
+var yelpHelpers = require('../../server/helpers/yelpFunctions.js');
 var sample = require('./sampleData.js');
 
 var assert = chai.assert;
@@ -30,5 +31,14 @@ describe('Tests Basic Routes', function(){
     expect(data2.distance < 300).to.equal(true);
     expect(typeof data2.filteredCoords).to.equal('object');
     expect(data2.filteredCoords === sample.waypoints[2].waypoints).to.equal(false);
+  });
+});
+
+describe('Yelp Helper Specs', function() {
+
+  it('should use Yelp to get the top locations', function() {
+    yelpHelpers.searchYelp(data.request, data.response, data.filteredWaypoints, data.distance, function(yelpResults){
+      expect(yelpResults).to.exist();
+    });
   });
 });

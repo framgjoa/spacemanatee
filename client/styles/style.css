@@ -11,8 +11,6 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
 /*************************************/
 
 #topTen {
-  margin-left: 20%;
-  margin-right: 20%;
   vertical-align: middle;
   text-align: center;
 }
@@ -44,8 +42,8 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
   height: 30px;
   width: 30px;
   margin-top: -110px;
-  border-radius: 25px;
   cursor: pointer;
+  margin-right: 3px;
 }
 
 #journey {
@@ -114,8 +112,26 @@ table {
 }
 
 #topTenList {
-  border: 1px solid #999999;;
+  border: 1px solid #999999;
+  height: 50px;
+  overflow: hidden;
 }
+#topTenList:hover {
+  border: 1px solid #999999;
+  height: 120px;
+  overflow: hidden;
+}
+
+.info {
+  /*visibility: hidden;*/
+  display: none;
+}
+
+#topTenList:hover .info {
+  /*visibility: visible;*/
+  display: block;
+ }
+
 .snippet {
   display: block;
   width: 100%;
