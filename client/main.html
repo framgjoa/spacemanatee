@@ -36,30 +36,26 @@
       </div><!-- col-lg-12 -->
     </div><!-- row -->
 
-
+    <p>You're gonna be driving {{distance}} (or {{duration}}). <br> Split it up by visiting our Top 10 favorite spots along the journey! </p><br>
     <div id="warningMsg"></div></div>
 
-    <div class="row">
+    <div class="row main">
       <div class="col-md-8">
-        <p>You're gonna be driving {{distance}} (or {{duration}}). <br> Split it up by visiting our Top 10 favorite spots along the journey! </p><br>
         <main-area></main-area>
         <div id="map-canvas"></div><br>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-4" ng-if="topTen" >
         <div id="topTen">
-          <div ng-if="topTen" ng-model="topTen">
-
+          <div ng-model="topTen">
             <div ng-repeat= "top in topTen | limitTo: 10" id="topTenList">
               <div ng-class="{'oddTop10': $odd , 'evenTop10': $even}">
-
-                <img id="thumbnail" ng-src='{{top["image_url"] ? top["image_url"] : "./images/default.jpg"}}' alt="Site\'s image not yet available"/><br>
-                <div style="padding:5px 0 0 0">
-
-                  <a ng-href='{{top["url"]}}' target="_blank"><div id="name">{{top.name}}</div></a>
-                  <div id="address">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
-                  <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" /><br>
-                  <div id="removeButton" ng-click="remove($index)"><img src="./images/removeButton.gif"></div>
+                <img id="thumbnail" class="info col-2" ng-src='{{top["image_url"] ? top["image_url"] : "./images/default.jpg"}}' alt="Site\'s image not yet available"/><br>
+                <a ng-href='{{top["url"]}}' target="_blank" ><div id="name">{{top.name}}</div></a>
+                <div class="row" style="padding:5px 0 0 0;">
+                  <div id="address" class="info">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
+                  <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" class="info"/>
+                  <div id="removeButton" ng-click="remove($index)" class="info"><img src="./images/removeButton.gif" ></div>
                 </div>
                 <br clear="all">
               </div>
