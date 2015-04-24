@@ -4,16 +4,15 @@ angular.module('app.service', [])
 
   // Generates a view to display the restaurant image and link
   var renderView = function(i, places) {
-
-      var description = '<div class="descriptionDiv">' +
-          '<a href="'+places[i].url +'" target="_blank">' + '<h1 class="place-name">' + places[i].name + '</h1></a>' +
-          '<div style="padding:5px;font-weight:bold;">' + 'Yelp Rating:&nbsp;&nbsp;' +
-          '<img style="vertical-align:middle;" src="'+ places[i].rating_img_url +'"/>' + '</div>' +
-          '<img src="'+ places[i].image_url +'"/>' +
-          '<div class="snippet">' + places[i].snippet_text + '</div>' +
-          '<a href="' + places[i].url +'" target="_blank"> Visit on Yelp</a>' +
-          '</div>';
-      return description;
+    var description = '<div class="descriptionDiv">' +
+      '<a href="'+places[i].url +'" target="_blank">' + '<h1 class="place-name">' + places[i].name + '</h1></a>' +
+      '<div style="padding:5px;font-weight:bold;">' + 'Yelp Rating:&nbsp;&nbsp;' +
+      '<img style="vertical-align:middle;" src="'+ places[i].rating_img_url +'"/>' + '</div>' +
+      '<img src="'+ places[i].image_url +'"/>' +
+      '<div class="snippet">' + places[i].snippet_text + '</div>' +
+      '<a href="' + places[i].url +'" target="_blank"> Visit on Yelp</a>' +
+      '</div>';
+    return description;
   };
 
   // Opens an info window when the marker is clicked on
@@ -28,18 +27,25 @@ angular.module('app.service', [])
     return this.charAt(0).toUpperCase() + this.slice(1);
   };
 
+  // Use closure scope to ensure that newest zIndices are always on top
+  var zIndex = 0;
+
   // Places each marker on the map
-  var placemarkers = function(places, icon, offset) {
+  var placemarkers = function(places, icon, offsetDelay) {
     icon = icon || {};
     icon.size = icon.size || 'sm';
     icon.color = icon.color || 'black';
-    offset = offset || 0;
+    offsetDelay = offsetDelay || 0;
+
+    if (!Array.isArray(places)) {
+      places = [places];
+    }
 
     for (var i = 0; i < places.length; i++) {
        setDelay(i, places);
     }
 
-    // Sets s delay for dropping each marker
+    // Sets a delay for dropping each marker
     function setDelay(i, places) {
       setTimeout(function() {
         var lat = places[i].location.coordinate.latitude;
@@ -51,13 +57,17 @@ angular.module('app.service', [])
           position: new google.maps.LatLng(lat,lng),
           animation: google.maps.Animation.DROP,
           icon: "images/pins/"+icon.size+"Pin"+icon.color.capitalizeFirstLetter()+".png",
-          zIndex: i+offset
+          zIndex: zIndex++
         });
 
         // Sets the pop-up box for clicking a marker
         attachInstructionText(marker, description);
-        markerArray[i] = marker;
-      }, (i+offset) * 300);
+        if (icon.size === "lg") {
+          markerArraySpread.push(marker);
+        } else {
+          markerArrayTop.push(marker);
+        }
+      }, (i+offsetDelay) * 300);
     }
   };
 

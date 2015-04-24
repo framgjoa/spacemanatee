@@ -29,7 +29,7 @@ var filter = function(requestBody){
 
   return {
     distance: totalTripDistance,
-    filteredCoords:filteredCoords
+    filteredCoords: filteredCoords
   };
 };
 
