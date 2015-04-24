@@ -99,6 +99,7 @@
       var setMap = function(data) {
         // Default is needed in case of adblock
         var mapOptions = {
+          scrollwheel: false,
           center: { lat: data && data.lat ? data.lat : 37.82, lng: data && data.lon ? data.lon : -122.30},
           zoom: 10,
           disableDefaultUI:false
