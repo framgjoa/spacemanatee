@@ -42,7 +42,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
     $scope.topTen.splice($index, 1);
     markerArrayTop.splice($index, 1)[0].setMap(null);
     if ($scope.topTen.length >= 10) {
-      Utility.placemarkers($scope.topTen[9], "top");
+      Utility.placemarkers($scope.topTen[9], {size: 'lg', color: $scope.selectColor($scope.currentOption)});
     }
   };
 
@@ -61,6 +61,20 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
       $element.find("main-area").append(pInvalid);
     } else {
       $element.find("main-area").append(pValid);
+    }
+  };
+
+  $scope.selectColor = function(currentOption) {
+    switch (currentOption) {
+      case "": return "white"; break;
+      case "food": return "orange"; break;
+      case "nightlife": return "black"; break;
+      case "shopping": return "yellow"; break;
+      case "medical": return "blue"; break;
+      case "gas": return "red"; break;
+      case "active, parks": return "green"; break;
+      case "pets": return "brown"; break;
+      default: return "red";
     }
   };
 
@@ -126,18 +140,7 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
           // Receives Yelp recommendations and displays as markers
           .then(function(res){
-            var color;
-            switch ($scope.currentOption) {
-              case "": color = "white"; break;
-              case "food": color = "orange"; break;
-              case "nightlife": color = "black"; break;
-              case "shopping": color = "yellow"; break;
-              case "medical": color = "blue"; break;
-              case "gas": color = "red"; break;
-              case "active, parks": color = "green"; break;
-              case "pets": color = "brown"; break;
-              default: color = "red";
-            }
+            var color = $scope.selectColor($scope.currentOption);            
 
             Utility.placemarkers(res.data.results, {size: 'sm', color: color});
             Utility.placemarkers(res.data.topTen.slice(0, 10), {size: 'lg', color: color}, res.data.results.length);
