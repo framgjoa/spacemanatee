@@ -75,14 +75,14 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
 
   $scope.selectColor = function(currentOption) {
     switch (currentOption) {
-      case "": return "white"; break;
-      case "food": return "orange"; break;
-      case "nightlife": return "black"; break;
-      case "shopping": return "yellow"; break;
-      case "medical": return "blue"; break;
-      case "gas": return "red"; break;
-      case "active, parks": return "green"; break;
-      case "pets": return "brown"; break;
+      case "": return "white";
+      case "food": return "orange";
+      case "nightlife": return "black";
+      case "shopping": return "yellow";
+      case "medical": return "blue";
+      case "gas": return "red";
+      case "active, parks": return "green";
+      case "pets": return "brown";
       default: return "red";
     }
   };
@@ -187,5 +187,5 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
     $element.find("main-area").empty();
     delete $scope.topTen;
     $scope.calcRoute($scope.location.start, $scope.location.end);
-git  };
+  };
 }]);
