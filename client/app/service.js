@@ -37,6 +37,9 @@ angular.module('app.service', [])
     icon.color = icon.color || 'black';
     offsetDelay = offsetDelay || 0;
 
+    // Let placemarkers work for a single place
+    //console.log('places', places, Array.isArray(places));
+
     if (!Array.isArray(places)) {
       places = [places];
     }
@@ -56,16 +59,16 @@ angular.module('app.service', [])
           map: map,
           position: new google.maps.LatLng(lat,lng),
           animation: google.maps.Animation.DROP,
-          icon: "images/pins/"+icon.size+"Pin"+icon.color.capitalizeFirstLetter()+".png",
+          icon: "images/pins/"+icon.size.toLowerCase()+"Pin"+icon.color.toLowerCase().capitalizeFirstLetter()+".png",
           zIndex: zIndex++
         });
 
         // Sets the pop-up box for clicking a marker
         attachInstructionText(marker, description);
         if (icon.size === "lg") {
-          markerArraySpread.push(marker);
-        } else {
           markerArrayTop.push(marker);
+        } else {
+          markerArraySpread.push(marker);
         }
       }, (i+offsetDelay) * 300);
     }

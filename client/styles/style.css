@@ -121,8 +121,8 @@ table {
   border: 1px solid #999999;
   height: 120px;
   overflow: hidden;
-  box-shadow: 5px 5px 5px grey;
-}
+/*  box-shadow: 10px 10px 10px grey;
+*/}
 
 .info {
   /*visibility: hidden;*/
