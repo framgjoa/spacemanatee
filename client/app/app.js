@@ -13,6 +13,7 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
     {name: 'Pets', value:"pets"}
   ];
 
+
   // Sets default filter to "food"
   $scope.optionFilter = $scope.optionSelections[1].value;
 
