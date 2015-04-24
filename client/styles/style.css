@@ -27,7 +27,7 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
 }
 
 #thumbnail {
-  margin-top: 12px;
+  margin-top: 5px;
   border-radius: 10px;
   float: left;
   padding: 5px;
@@ -41,9 +41,9 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
   float: right;
   height: 30px;
   width: 30px;
-  margin-top: -110px;
+  margin-top: -108px;
   cursor: pointer;
-  margin-right: 3px;
+  margin-right: 15px;
 }
 
 #journey {
@@ -113,7 +113,7 @@ table {
 
 #topTenList {
   border: 1px solid #999999;
-  height: 50px;
+  height: 120px;
   overflow: hidden;
 }
 #topTenList:hover {
@@ -124,7 +124,7 @@ table {
 
 .info {
   /*visibility: hidden;*/
-  display: none;
+  display: block;
 }
 
 #topTenList:hover .info {
