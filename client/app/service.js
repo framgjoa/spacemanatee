@@ -37,6 +37,9 @@ angular.module('app.service', [])
     icon.color = icon.color || 'black';
     offsetDelay = offsetDelay || 0;
 
+    // Let placemarkers work for a single place
+    //console.log('places', places, Array.isArray(places));
+
     if (!Array.isArray(places)) {
       places = [places];
     }
