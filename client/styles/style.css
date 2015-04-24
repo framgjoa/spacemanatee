@@ -33,18 +33,19 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
   padding: 5px;
 }
 
-#stars {
-  padding: 5px;
-}
-
 #removeButton img {
   float: right;
   height: 30px;
   width: 30px;
-  margin-top: -108px;
+  margin-top: -81px;
   cursor: pointer;
   margin-right: 15px;
 }
+
+#stars {
+  padding-left: 100px;
+}
+
 
 #journey {
   text-align: center;
@@ -113,18 +114,19 @@ table {
 
 #topTenList {
   border: 1px solid #999999;
-  height: 120px;
+  height: 50px;
   overflow: hidden;
 }
 #topTenList:hover {
   border: 1px solid #999999;
   height: 120px;
   overflow: hidden;
+  box-shadow: 5px 5px 5px grey;
 }
 
 .info {
   /*visibility: hidden;*/
-  display: block;
+  display: none;
 }
 
 #topTenList:hover .info {
@@ -149,4 +151,10 @@ table {
   font-size: 2.0em;
   font-family: 'Rancho', helvetica, arial;
   color: red;
+}
+
+p {
+  font-family: 'Rancho', helvetica, arial;
+  font-size: 24px;
+  padding-left: 35px;
 }
