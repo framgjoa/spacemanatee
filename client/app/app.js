@@ -1,4 +1,4 @@
-angular.module('app', ['ngFx', 'ngAnimate', 'autofill-directive', 'ngRoute', 'app.service'])
+angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
 
 .controller('mapCtrl', ['$scope', '$element', 'Utility', function($scope, $element, Utility) {
   // Initializes the user input option selector
