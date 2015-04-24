@@ -22,21 +22,32 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
   $scope.distance = "";
   $scope.time = "";
 
-  // Cache will be to store the distances from origin for the TopTop attractions
-  // Since each will require a Google API query, in order to minimize re-queries,
-  // the initial result will be stored in cache
-  $scope.cache = {};
+  // Calculates the cumulative distance to each TopTop attraction from origin
+  // Assigns the cumDist property to each TopTen object
 
-  // Takes the TopTop array and calculates cumulative distance per location
-  // Caches result so the refresh function does not re-query to save API time
-  $scope.cumulativeDistance = function(){
-  //   console.log("topTen: ", $scope.topTen);
-  //   for (var i = 0; i < $scope.topTen.length; i++){
-  //     console.log("Cumulative Distance: ",  i, $scope.topTen);
-  //   }
+  $scope.cumulativeDistance = function(start, end, i){
 
+    var tempRequest = {
+      origin: start,
+      destination: end,
+      travelMode: google.maps.TravelMode.DRIVING
+    };
 
+    var directionsService = new google.maps.DirectionsService();
+    var subRoute = directionsService.route(tempRequest, function(result, status) {
+      if (status == google.maps.DirectionsStatus.OK) {
+        //console.log("Status OK");
+
+        var tempResult = result;
+
+        // Store distance based on location in array for each TopTen
+        $scope.topTen[i].cumDist = tempResult.routes[0].legs[0].distance.text;
+        //console.log("TopTen[",i,"] ", $scope.topTen[i].cumDist);
+
+      }
+    });
   };
+
 
   $scope.remove = function($index) {
     $scope.topTen.splice($index, 1);
@@ -64,10 +75,40 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
     }
   };
 
+  // Callback function
+  $scope.overallRouteCalc = function(res){
+    var color;
+      switch ($scope.currentOption) {
+        case "": color = "white"; break;
+        case "food": color = "orange"; break;
+        case "nightlife": color = "black"; break;
+        case "shopping": color = "yellow"; break;
+        case "medical": color = "blue"; break;
+        case "gas": color = "red"; break;
+        case "active, parks": color = "green"; break;
+        case "pets": color = "brown"; break;
+        default: color = "red";
+      }
+
+    Utility.placemarkers(res.data.results, {size: 'sm', color: color});
+    Utility.placemarkers(res.data.topTen.slice(0, 10), {size: 'lg', color: color}, res.data.results.length);
+    $scope.topTen = res.data.topTen;
+
+    // Passing a postal code as use of the Lat/Long object rejected by Google API
+    // Use of postal code is a quicker approximation. Works outside of US
+
+    //Loops over all topTen results and assigns their cumulative distance
+    for(var i = 0; i <$scope.topTen.length; i++){
+      $scope.cumulativeDistance($scope.location.start, $scope.topTen[i].location.postal_code, i);
+    }
+    //console.log("Final topTen objects", $scope.topTen);
+  };
 
   //Queries Google for directions services and generates map
-  $scope.calcRoute = function (start, end) {
-      console.log("Calculating Route...");
+  $scope.calcRoute = function (start, end, cb) {
+      //console.log("Calculating Route...");
+
+      cb = cb || $scope.overallRouteCalc;
 
       // New directionsService object to interact with Google maps API
       var directionsService = new google.maps.DirectionsService(start,end);
@@ -89,8 +130,6 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
       };
 
         directionsService.route(request(), function(response, status) {
-
-        // successfully get the direction based on locations
         if (status === google.maps.DirectionsStatus.OK) {
 
           $scope.geoCodeNotSuccessful=false;
@@ -125,25 +164,7 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
           Utility.sendMapData(mapData)
 
           // Receives Yelp recommendations and displays as markers
-          .then(function(res){
-            var color;
-            switch ($scope.currentOption) {
-              case "": color = "white"; break;
-              case "food": color = "orange"; break;
-              case "nightlife": color = "black"; break;
-              case "shopping": color = "yellow"; break;
-              case "medical": color = "blue"; break;
-              case "gas": color = "red"; break;
-              case "active, parks": color = "green"; break;
-              case "pets": color = "brown"; break;
-              default: color = "red";
-            }
-
-            Utility.placemarkers(res.data.results, {size: 'sm', color: color});
-            Utility.placemarkers(res.data.topTen.slice(0, 10), {size: 'lg', color: color}, res.data.results.length);
-            $scope.topTen = res.data.topTen;
-            console.log("CB topTen: ", $scope.topTen);
-          });
+          .then(cb);
         } else {
 
           // Sets the geoCodeNotSuccessful to true
@@ -171,7 +192,5 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
     $element.find("main-area").empty();
 
     $scope.calcRoute($scope.location.start, $scope.location.end);
-
-    $scope.cumulativeDistance();
     };
 }]);
