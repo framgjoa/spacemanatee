@@ -44,7 +44,7 @@
       </div><!-- col-lg-12 -->
     </div><!-- row -->
 
-    <p>You're gonna be driving {{distance}} (or {{duration}}). <br> Split it up by visiting our Top 10 favorite spots along the journey! </p><br>
+    <p ng-if="topTen">You're gonna be driving {{distance}} (or {{duration}}). <br> Split it up by visiting our Top 10 favorite spots along the journey! </p><br>
     <div id="warningMsg"></div></div>
 
     <div class="row main">
@@ -54,7 +54,7 @@
       </div>
 
       <div class="col-md-4" ng-if="topTen" >
-        <div id="topTen">
+        <div id="topTen" class="fadeInRightBig">
           <div ng-model="topTen">
             <div ng-repeat= "top in topTen | limitTo: 10" id="topTenList">
               <div ng-class="{'oddTop10': $odd , 'evenTop10': $even}">
