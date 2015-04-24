@@ -39,8 +39,6 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
         //console.log("Status OK");
 
         var tempResult = result;
-        //console.log("TempResult.routes: ", tempResult["routes"]["0"]["legs"]["0"]["distance"]["text"]);
-        //console.log("Result inside request: ", tempResult.routes[0].legs[0].distance.text);
 
         // Store distance based on location in array for each TopTen
         $scope.topTen[i].cumDist = tempResult.routes[0].legs[0].distance.text;
