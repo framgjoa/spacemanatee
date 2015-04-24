@@ -112,8 +112,26 @@ table {
 }
 
 #topTenList {
-  border: 1px solid #999999;;
+  border: 1px solid #999999;
+  height: 50px;
+  overflow: hidden;
 }
+#topTenList:hover {
+  border: 1px solid #999999;
+  height: 120px;
+  overflow: hidden;
+}
+
+.info {
+  /*visibility: hidden;*/
+  display: none;
+}
+
+#topTenList:hover .info {
+  /*visibility: visible;*/
+  display: block;
+ }
+
 .snippet {
   display: block;
   width: 100%;

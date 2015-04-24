@@ -4,7 +4,6 @@ angular.module('app.service', [])
 
   // Generates a view to display the restaurant image and link
   var renderView = function(i, places) {
-
     var description = '<div class="descriptionDiv">' +
       '<a href="'+places[i].url +'" target="_blank">' + '<h1 class="place-name">' + places[i].name + '</h1></a>' +
       '<div style="padding:5px;font-weight:bold;">' + 'Yelp Rating:&nbsp;&nbsp;' +
@@ -24,16 +23,20 @@ angular.module('app.service', [])
     });
   };
 
+  String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
   // Use closure scope to ensure that newest zIndices are always on top
   var zIndex = 0;
 
   // Places each marker on the map
-  var placemarkers = function(places, type, offsetDelay) {
-    type = type || "spread";
+  var placemarkers = function(places, icon, offsetDelay) {
+    icon = icon || {};
+    icon.size = icon.size || 'sm';
+    icon.color = icon.color || 'black';
     offsetDelay = offsetDelay || 0;
 
-    // Let placemarkers work for a single place
-    console.log('places', places, Array.isArray(places));
     if (!Array.isArray(places)) {
       places = [places];
     }
@@ -42,7 +45,7 @@ angular.module('app.service', [])
        setDelay(i, places);
     }
 
-    // Sets s delay for dropping each marker
+    // Sets a delay for dropping each marker
     function setDelay(i, places) {
       setTimeout(function() {
         var lat = places[i].location.coordinate.latitude;
@@ -53,13 +56,13 @@ angular.module('app.service', [])
           map: map,
           position: new google.maps.LatLng(lat,lng),
           animation: google.maps.Animation.DROP,
-          icon: type === "spread" ? "images/smPinRed.png" : "images/smPinBlue.png",
+          icon: "images/pins/"+icon.size+"Pin"+icon.color.capitalizeFirstLetter()+".png",
           zIndex: zIndex++
         });
 
         // Sets the pop-up box for clicking a marker
         attachInstructionText(marker, description);
-        if (type === "spread") {
+        if (icon.size === "lg") {
           markerArraySpread.push(marker);
         } else {
           markerArrayTop.push(marker);
