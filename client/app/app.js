@@ -79,8 +79,21 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
 
   // Callback function
   $scope.overallRouteCalc = function(res){
-    Utility.placemarkers(res.data.results);
-    Utility.placemarkers(res.data.topTen.slice(0, 10), 'top', res.data.results.length);
+    var color;
+      switch ($scope.currentOption) {
+        case "": color = "white"; break;
+        case "food": color = "orange"; break;
+        case "nightlife": color = "black"; break;
+        case "shopping": color = "yellow"; break;
+        case "medical": color = "blue"; break;
+        case "gas": color = "red"; break;
+        case "active, parks": color = "green"; break;
+        case "pets": color = "brown"; break;
+        default: color = "red";
+      }
+
+    Utility.placemarkers(res.data.results, {size: 'sm', color: color});
+    Utility.placemarkers(res.data.topTen.slice(0, 10), {size: 'lg', color: color}, res.data.results.length);
     $scope.topTen = res.data.topTen;
 
     // Passing a postal code as use of the Lat/Long object rejected by Google API
@@ -133,6 +146,9 @@ angular.module('app', ['autofill-directive', 'ngRoute', 'app.service'])
             optionFilter: $scope.optionFilter,
             waypoints: []
           };
+
+          // Save it for drawing map
+          $scope.currentOption = $scope.optionFilter;
 
           // Gathers all points along route returned by Google in overview_path property
           // Inserts them into the mapData object
