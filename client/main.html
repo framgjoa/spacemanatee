@@ -56,20 +56,20 @@
 
       <div class="col-md-4" ng-if="topTen" >
         <div id="topTen" class="fadeInRightBig">
-          <div ng-model="topTen">
-            <div ng-repeat= "top in topTen | limitTo: 10" id="topTenList">
+          <!-- <div ng-model="topTen"> -->
+            <div ng-repeat= "top in topTen | limitTo: 10 | orderBy: '-cumDist' " id="topTenList">
               <div ng-class="{'oddTop10': $odd , 'evenTop10': $even}">
                 <img id="thumbnail" class="info col-2" ng-src='{{top["image_url"] ? top["image_url"] : "./images/default.jpg"}}' alt="Site\'s image not yet available"/><br>
                 <a ng-href='{{top["url"]}}' target="_blank" ><div id="name">{{top.name}}</div></a>
                 <div class="row" style="padding:5px 0 0 0;">
-                  <div id="address" class="info">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
+                  <div id="address" class="info">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}} <span>{{top.cumDist}}</span></div>
                   <div id="removeButton" ng-click="remove($index)" class="info"><img src="./images/removeButton.gif" ></div>
                   <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" class="info"/>
                 </div>
                 <br clear="all">
               </div>
             </div>
-          </div>
+          <!-- </div> -->
           <br>
           <br>
         </div>
