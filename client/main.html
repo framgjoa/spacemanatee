@@ -65,6 +65,7 @@
                   <div id="address" class="info">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}} <span>{{top.cumDist}}</span></div>
                   <div id="removeButton" ng-click="remove($index)" class="info"><img src="./images/removeButton.gif" ></div>
                   <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" class="info"/>
+                  <div id="distance">{{top.cumDist}}</div>
                 </div>
                 <br clear="all">
               </div>
