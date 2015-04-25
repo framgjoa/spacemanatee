@@ -76,6 +76,17 @@ module.exports.searchYelp = function (req, res, googleCoords, distance, callback
 
 // Filters Yelp results into an overall top 10
 module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
+  // Use this code to save a copy of a representative data set for testing  
+  // var fs = require('fs');
+  // fs.writeFile(__dirname+'/../../test/server/yelpSampleData.js',
+  //   'module.exports = { yelpResults: '+JSON.stringify(yelpResults)+', distance: '+JSON.stringify(distance)+', start: '+JSON.stringify(start)+'};',
+  //   function(err) {
+  //   if (err) {
+  //     console.error(err);
+  //   }
+  //   console.log('File saved!');
+  // });
+
   var allBusinesses = [];
 
   // Pushes all businesses from yelpResults into one array for easy filtering
@@ -109,7 +120,8 @@ module.exports.createTopResultsJSON = function(yelpResults, distance, start) {
     }
 
     // Limits to top 30 results
-    topResults = allBusinesses.slice(0, 30);
+    // Splice over slice to prevent repeating with findEvenSpreadResults
+    topResults = allBusinesses.splice(0, 30);
     return topResults;
   };
 
