@@ -26,7 +26,7 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
   // Calculates the cumulative distance to each TopTop attraction from origin
   // Assigns the cumDist property to each TopTen object
 
-  $scope.cumulativeDistance = function(start, end, i){
+  var cumulativeDistance = function(start, end, i){
 
     var tempRequest = {
       origin: start,
@@ -43,6 +43,7 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
 
         // Store distance based on location in array for each TopTen
         $scope.topTen[i].cumDist = tempResult.routes[0].legs[0].distance.text;
+        $scope.$apply();
         //console.log("TopTen[",i,"] ", $scope.topTen[i].cumDist);
 
       }
@@ -92,7 +93,7 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
 
   // Callback function
   $scope.overallRouteCalc = function(res){
-    var color = $scope.selectColor($scope.currentOption);            
+    var color = $scope.selectColor($scope.currentOption);
 
     Utility.placemarkers(res.data.results, {size: 'sm', color: color});
     Utility.placemarkers(res.data.topTen.slice(0, 10), {size: 'lg', color: color}, res.data.results.length);
@@ -103,9 +104,10 @@ angular.module('app', ['ngFx', 'autofill-directive', 'ngRoute', 'app.service'])
 
     //Loops over all topTen results and assigns their cumulative distance
     for(var i = 0; i <$scope.topTen.length; i++){
-      $scope.cumulativeDistance($scope.location.start, $scope.topTen[i].location.postal_code, i);
+      cumulativeDistance($scope.location.start, $scope.topTen[i].location.postal_code, i);
     }
-    //console.log("Final topTen objects", $scope.topTen);
+
+    // console.log("Final topTen objects", $scope.topTen);
   };
 
   //Queries Google for directions services and generates map
