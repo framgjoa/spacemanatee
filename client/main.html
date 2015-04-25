@@ -44,6 +44,7 @@
       </div><!-- col-lg-12 -->
     </div><!-- row -->
 
+
     <p ng-if="topTen">You're gonna be driving {{distance}} (or {{duration}}). <br> Split it up by visiting our Top 10 favorite spots along the journey! </p><br>
     <div id="warningMsg"></div></div>
 
@@ -62,8 +63,8 @@
                 <a ng-href='{{top["url"]}}' target="_blank" ><div id="name">{{top.name}}</div></a>
                 <div class="row" style="padding:5px 0 0 0;">
                   <div id="address" class="info">{{top.location.address[0]}}, {{top.location.city}} {{top.location.state_code}}</div>
-                  <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" class="info"/>
                   <div id="removeButton" ng-click="remove($index)" class="info"><img src="./images/removeButton.gif" ></div>
+                  <img id="stars" ng-src='{{top["rating_img_url"]}}' alt="rating not yet available" class="info"/>
                 </div>
                 <br clear="all">
               </div>

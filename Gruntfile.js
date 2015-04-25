@@ -36,7 +36,7 @@ module.exports = function(grunt){
     },
 
     // Build
-    clean: ['client/dist/'],
+    clean: ['client/dist/', 'test/client/app/'],
 
     concat: {
       options: {
